@@ -54,44 +54,45 @@ WITH max_month AS
 	       ,product_cate5_name
 	       ,is_new_product_flag
 	       ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
-	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name  ELSE payer_name END AS customer_name
-	       ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name                                               AS stat_weight
-	       ,SUM(billing_qty)                                                                                                   AS cases
-	       ,SUM(list_price_revenue_excl_r100)                                                                                  AS gsv_comp
-	       ,SUM(billing_qty_ly)                                                                                                AS cases_ly
-	       ,SUM(list_price_revenue_excl_r100_ly)                                                                               AS gsv_comp_ly
-	       ,SUM(le_case_org)                                                                                                   AS le_case_org
-	       ,SUM(le_gsv_org)*1e3                                                                                                AS le_gsv_org
-	       ,SUM(le_case_org)                                                                                                   AS st_case_org
-	       ,SUM(le_gsv_org)*1e3                                                                                                AS st_gsv_org
-	       ,SUM(sp_case_org)                                                                                                   AS sp_case_org
-	       ,SUM(sp_gsv_org)*1e3                                                                                                AS sp_gsv_org
-	       ,SUM(le_case_customer)                                                                                              AS le_case_customer
-	       ,SUM(le_gsv_customer)*1e3                                                                                           AS le_gsv_customer
-	       ,SUM(sp_case_customer)                                                                                              AS sp_case_customer
-	       ,SUM(sp_gsv_customer)*1e3                                                                                           AS sp_gsv_customer
-	       ,SUM(le_case_customer)                                                                                              AS st_case_customer
-	       ,SUM(le_gsv_customer)*1e3                                                                                           AS st_gsv_customer
-	       ,SUM(le_case_product)                                                                                               AS le_case_product
-	       ,SUM(le_gsv_product)*1e3                                                                                            AS le_gsv_product
-	       ,0                                                                                                                  AS sp_case_product
-	       ,0                                                                                                                  AS sp_gsv_product
-	       ,SUM(stock_count_unit_qty)                                                                                          AS stock_case
-	       ,SUM(stock_gsv_mdm)                                                                                                 AS stock_gsv
-	       ,SUM(stock_count_unit_qty_ly)                                                                                       AS stock_case_ly
-	       ,SUM(stock_gsv_mdm_ly)                                                                                              AS stock_gsv_ly
-	       ,SUM(sellout_past_28days_count_unit_qty)/28                                                                         AS sellout_past_case
-	       ,SUM(sellout_past_28days_gsv_mdm)/28                                                                                AS sellout_past_gsv
-	       ,SUM(sellout_next_28days_count_unit_qty)/28                                                                         AS sellout_next_case
-	       ,SUM(sellout_next_28days_gsv_mdm)/28                                                                                AS sellout_next_gsv
-	       ,SUM(sellout_past_28days_count_unit_qty_ly)/28                                                                      AS sellout_past_case_ly
-	       ,SUM(sellout_past_28days_gsv_mdm_ly)/28                                                                             AS sellout_past_gsv_ly
-	       ,SUM(sellout_next_28days_count_unit_qty_ly)/28                                                                      AS sellout_next_case_ly
-	       ,SUM(sellout_next_28days_gsv_mdm_ly)/28                                                                             AS sellout_next_gsv_ly
-	       ,SUM(count_unit_qty)                                                                                                AS sellout_case
-	       ,SUM(gsv_mdm)                                                                                                       AS sellout_gsv
-	       ,SUM(count_unit_qty_ly)                                                                                             AS sellout_case_ly
-	       ,SUM(gsv_mdm_ly)                                                                                                    AS sellout_gsv_ly
+	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
+	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END AS customer_name
+	       ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name              AS stat_weight
+	       ,SUM(billing_qty)                                                                  AS cases
+	       ,SUM(list_price_revenue_excl_r100)                                                 AS gsv_comp
+	       ,SUM(billing_qty_ly)                                                               AS cases_ly
+	       ,SUM(list_price_revenue_excl_r100_ly)                                              AS gsv_comp_ly
+	       ,SUM(le_case_org)                                                                  AS le_case_org
+	       ,SUM(le_gsv_org)*1e3                                                               AS le_gsv_org
+	       ,SUM(le_case_org)                                                                  AS st_case_org
+	       ,SUM(le_gsv_org)*1e3                                                               AS st_gsv_org
+	       ,SUM(sp_case_org)                                                                  AS sp_case_org
+	       ,SUM(sp_gsv_org)*1e3                                                               AS sp_gsv_org
+	       ,SUM(le_case_customer)                                                             AS le_case_customer
+	       ,SUM(le_gsv_customer)*1e3                                                          AS le_gsv_customer
+	       ,SUM(sp_case_customer)                                                             AS sp_case_customer
+	       ,SUM(sp_gsv_customer)*1e3                                                          AS sp_gsv_customer
+	       ,SUM(le_case_customer)                                                             AS st_case_customer
+	       ,SUM(le_gsv_customer)*1e3                                                          AS st_gsv_customer
+	       ,SUM(le_case_product)                                                              AS le_case_product
+	       ,SUM(le_gsv_product)*1e3                                                           AS le_gsv_product
+	       ,0                                                                                 AS sp_case_product
+	       ,0                                                                                 AS sp_gsv_product
+	       ,SUM(stock_count_unit_qty)                                                         AS stock_case
+	       ,SUM(stock_gsv_mdm)                                                                AS stock_gsv
+	       ,SUM(stock_count_unit_qty_ly)                                                      AS stock_case_ly
+	       ,SUM(stock_gsv_mdm_ly)                                                             AS stock_gsv_ly
+	       ,SUM(sellout_past_28days_count_unit_qty)/28                                        AS sellout_past_case
+	       ,SUM(sellout_past_28days_gsv_mdm)/28                                               AS sellout_past_gsv
+	       ,SUM(sellout_next_28days_count_unit_qty)/28                                        AS sellout_next_case
+	       ,SUM(sellout_next_28days_gsv_mdm)/28                                               AS sellout_next_gsv
+	       ,SUM(sellout_past_28days_count_unit_qty_ly)/28                                     AS sellout_past_case_ly
+	       ,SUM(sellout_past_28days_gsv_mdm_ly)/28                                            AS sellout_past_gsv_ly
+	       ,SUM(sellout_next_28days_count_unit_qty_ly)/28                                     AS sellout_next_case_ly
+	       ,SUM(sellout_next_28days_gsv_mdm_ly)/28                                            AS sellout_next_gsv_ly
+	       ,SUM(count_unit_qty)                                                               AS sellout_case
+	       ,SUM(gsv_mdm)                                                                      AS sellout_gsv
+	       ,SUM(count_unit_qty_ly)                                                            AS sellout_case_ly
+	       ,SUM(gsv_mdm_ly)                                                                   AS sellout_gsv_ly
 	FROM tb_billing_data
 	GROUP BY  calendar_date
 	         ,product_brand_name
@@ -109,7 +110,8 @@ WITH max_month AS
 	         ,is_new_product_flag
 	         ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name
 	         ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
-	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name  ELSE payer_name END
+	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
+	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END
 ), fact_multi AS
 (
 	SELECT  '零售-细分'                                                                                AS level_0
@@ -156,6 +158,8 @@ WITH max_month AS
 	WHERE business_area_name IN ('餐饮', '零售', '电商') 
 )
 SELECT  t1.*
+       ,CASE WHEN customer_name IN ('山姆','大润发','沃尔玛','华润','永辉','麦德龙','罗森','福满家','开市客') THEN customer_name
+             WHEN customer_name IN ('广州赛味谦食品有限公司','杭州鼎佳食品有限公司','深圳市东江鑫达食品有限公司','珠海市大南北发展有限公司','广州市炽发贸易有限公司','福州诚必隆贸易有限公司','宁波开明街坊食品有限公司','北京鸿昌硕商贸有限公司','长沙能臣食品贸易有限公司') THEN customer_name  ELSE 'others' END AS top_customer_name
        ,t2.*
        ,t3.mtd_time_pasting
        ,t3.qtd_time_pasting
@@ -168,3 +172,4 @@ LEFT JOIN time_past AS t3
 ON t2.fiscal_year = t3.fiscal_year AND t2.fiscal_month = t3.fiscal_month
 WHERE t2.fiscal_year >= 2025
 AND product_brand_name IN ('哈根达斯'，'湾仔码头')
+AND sales_district_name NOT IN ('达上', '未匹配')
