@@ -22,32 +22,32 @@ WITH holiday AS
 	       ,t1.dt_ly
 	       ,t1.dt_lly
 	       ,t1.week_day
-	       ,t2.week_day                               AS week_day_ly
-	       ,t3.week_day                               AS week_day_lly
+	       ,t2.week_day                                     AS week_day_ly
+	       ,t3.week_day                                     AS week_day_lly
 	       ,CASE WHEN h1.holiday is not null THEN h1.holiday
-	             WHEN t1.week_day >= 6 THEN '休息日' END AS holiday
+	             WHEN t1.week_day >= 5 THEN '休息日' END       AS holiday
 	       ,CASE WHEN h1.holiday = '春节' THEN 1
 	             WHEN h1.holiday = '元宵' THEN 2
 	             WHEN h1.holiday = '元旦' THEN 3
 	             WHEN h1.holiday = '冬至' THEN 4
-	             WHEN t1.week_day >= 6 THEN 5 END     AS holiday_flag
+	             WHEN t1.week_day >= 5 THEN t1.week_day END AS holiday_flag
 	       ,h1.holiday_begin
 	       ,CASE WHEN h2.holiday is not null THEN h2.holiday
-	             WHEN t2.week_day >= 6 THEN '休息日' END AS holiday_ly
+	             WHEN t2.week_day >= 5 THEN '休息日' END       AS holiday_ly
 	       ,CASE WHEN h2.holiday = '春节' THEN 1
 	             WHEN h2.holiday = '元宵' THEN 2
 	             WHEN h2.holiday = '元旦' THEN 3
 	             WHEN h2.holiday = '冬至' THEN 4
-	             WHEN t2.week_day >= 6 THEN 5 END     AS holiday_ly_flag
+	             WHEN t2.week_day >= 5 THEN t2.week_day END AS holiday_ly_flag
 	       ,h2.holiday_begin holiday_begin_ly
 	       ,CASE WHEN h3.holiday is not null THEN h3.holiday
-	             WHEN t3.week_day >= 6 THEN '休息日' END AS holiday_lly
+	             WHEN t3.week_day >= 5 THEN '休息日' END       AS holiday_lly
 	       ,CASE WHEN h3.holiday = '春节' THEN 1
 	             WHEN h3.holiday = '元宵' THEN 2
 	             WHEN h3.holiday = '元旦' THEN 3
 	             WHEN h3.holiday = '冬至' THEN 4
-	             WHEN t3.week_day >= 6 THEN 5 END     AS holiday_lly_flag
-	       ,h3.holiday_begin                          AS holiday_begin_lly
+	             WHEN t3.week_day >= 5 THEN t3.week_day END AS holiday_lly_flag
+	       ,h3.holiday_begin                                AS holiday_begin_lly
 	FROM dim_date t1
 	LEFT JOIN dim_date AS t2
 	ON t1.dt_ly = t2.dt
