@@ -67,6 +67,7 @@ WITH holiday AS
 	       ,sales_district_name
 	       ,product_brand_name
 	       ,b_product_category_name
+	       ,custom_type
 	       ,CASE WHEN data_source = 'DMS' THEN dist_name
 	             WHEN data_source = 'POS' THEN custom_name END customer_name
 	       ,SUM(pieces)                                   AS pieces
@@ -90,6 +91,7 @@ WITH holiday AS
 	         ,sales_district_name
 	         ,product_brand_name
 	         ,b_product_category_name
+	         ,custom_type
 	         ,CASE WHEN data_source = 'DMS' THEN dist_name
 	             WHEN data_source = 'POS' THEN custom_name END
 ), fact_ly AS
@@ -100,6 +102,7 @@ WITH holiday AS
 	       ,t1.sales_district_name
 	       ,t1.product_brand_name
 	       ,t1.b_product_category_name
+	       ,t1.custom_type
 	       ,t1.customer_name
 	       ,0              AS pieces
 	       ,0              AS cases
@@ -125,6 +128,7 @@ WITH holiday AS
 	       ,t1.sales_district_name
 	       ,t1.product_brand_name
 	       ,t1.b_product_category_name
+	       ,custom_type
 	       ,t1.customer_name
 	       ,0              AS pieces
 	       ,0              AS cases
@@ -160,6 +164,7 @@ WITH holiday AS
 	       ,t1.sales_district_name
 	       ,t1.product_brand_name
 	       ,t1.b_product_category_name
+	       ,t1.custom_type
 	       ,t1.customer_name
 	       ,SUM(pieces)          AS pieces
 	       ,SUM(cases)           AS cases
@@ -181,9 +186,11 @@ WITH holiday AS
 	         ,t1.product_brand_name
 	         ,t1.b_product_category_name
 	         ,t1.customer_name
+	         ,t1.custom_type
 )
 SELECT  t1.*
        ,t2.*
 FROM fact_agg t1
 LEFT JOIN dim_date_holiday t2
 ON t1.report_date = t2.dt
+WHERE product_brand_name IN ('哈根达斯', '湾仔码头')
