@@ -63,37 +63,10 @@ WITH holiday AS
 (
 	SELECT  data_source
 	       ,cast(to_date(report_date,'yyyymmdd') AS date) AS report_date
-	       ,dist_code
-	       ,shop_code
-	       ,shop_name
-	       ,dist_name
-	       ,custom_name
-	       ,custom_type
 	       ,business_area_name
 	       ,sales_district_name
-	       ,customer_group_2_name
-	       ,customer_group_5_name
-	       ,geo_region
-	       ,province_name
-	       ,city_name
-	       ,chain_type_name
-	       ,chain_group_name
-	       ,shop_type_name
-	       ,shop_subtype_name
 	       ,product_brand_name
-	       ,active_custom_code
-	       ,b_product_code
-	       ,b_product_name
 	       ,b_product_category_name
-	       ,b_product_midcategory_name
-	       ,b_product_subcategory_name
-	       ,b_product_cate5_name
-	       ,b_product_strategy
-	       ,new_prod_flag
-	       ,b_stat_weight
-	       ,b_stat_weight_unit_name
-	       ,b_product_barcode
-	       ,b_product_series_name
 	       ,CASE WHEN data_source = 'DMS' THEN dist_name
 	             WHEN data_source = 'POS' THEN custom_name END customer_name
 	       ,SUM(pieces)                                   AS pieces
@@ -110,81 +83,23 @@ WITH holiday AS
 	       ,0                                             AS gsv_mdm_lly
 	FROM tb_pos_dms_sales_detail_fact_lake_quickbi
 	WHERE dt <> ''
-	AND fiscal_year >= year(GETDATE()) -4
+	AND fiscal_year >= year(GETDATE()) -2
 	GROUP BY  data_source
 	         ,cast(to_date(report_date,'yyyymmdd') AS date)
-	         ,holiday
-	         ,holiday_begin
-	         ,dist_code
-	         ,shop_code
-	         ,shop_name
-	         ,dist_name
-	         ,custom_name
-	         ,custom_type
 	         ,business_area_name
 	         ,sales_district_name
-	         ,customer_group_2_name
-	         ,customer_group_5_name
-	         ,geo_region
-	         ,province_name
-	         ,city_name
-	         ,chain_type_name
-	         ,chain_group_name
-	         ,shop_type_name
-	         ,shop_subtype_name
 	         ,product_brand_name
-	         ,active_custom_code
-	         ,b_product_code
-	         ,b_product_name
 	         ,b_product_category_name
-	         ,b_product_midcategory_name
-	         ,b_product_subcategory_name
-	         ,b_product_cate5_name
-	         ,b_product_strategy
-	         ,new_prod_flag
-	         ,b_stat_weight
-	         ,b_stat_weight_unit_name
-	         ,b_product_barcode
-	         ,b_product_series_name
-	         ,dw_source_system
-	         ,dw_source_table
 	         ,CASE WHEN data_source = 'DMS' THEN dist_name
 	             WHEN data_source = 'POS' THEN custom_name END
 ), fact_ly AS
 (
 	SELECT  t1.data_source
 	       ,t2.dt          AS report_date
-	       ,t1.dist_code
-	       ,t1.shop_code
-	       ,t1.shop_name
-	       ,t1.dist_name
-	       ,t1.custom_name
-	       ,t1.custom_type
 	       ,t1.business_area_name
 	       ,t1.sales_district_name
-	       ,t1.customer_group_2_name
-	       ,t1.customer_group_5_name
-	       ,t1.geo_region
-	       ,t1.province_name
-	       ,t1.city_name
-	       ,t1.chain_type_name
-	       ,t1.chain_group_name
-	       ,t1.shop_type_name
-	       ,t1.shop_subtype_name
 	       ,t1.product_brand_name
-	       ,t1.active_custom_code
-	       ,t1.b_product_code
-	       ,t1.b_product_name
 	       ,t1.b_product_category_name
-	       ,t1.b_product_midcategory_name
-	       ,t1.b_product_subcategory_name
-	       ,t1.b_product_cate5_name
-	       ,t1.b_product_strategy
-	       ,t1.new_prod_flag
-	       ,t1.b_stat_weight
-	       ,t1.b_stat_weight_unit_name
-	       ,t1.b_product_barcode
-	       ,t1.b_product_series_name
 	       ,t1.customer_name
 	       ,0              AS pieces
 	       ,0              AS cases
@@ -199,44 +114,17 @@ WITH holiday AS
 	       ,0              AS gross_sales_lly
 	       ,0              AS gsv_mdm_lly
 	FROM fact AS t1
-	LEFT JOIN dim_date_holiday t2
+	LEFT JOIN dim_date t2
 	ON t1.report_date = t2.dt_ly
 	WHERE t2.dt is not null 
 ) , fact_lly AS
 (
 	SELECT  t1.data_source
 	       ,t2.dt          AS report_date
-	       ,t1.dist_code
-	       ,t1.shop_code
-	       ,t1.shop_name
-	       ,t1.dist_name
-	       ,t1.custom_name
-	       ,t1.custom_type
 	       ,t1.business_area_name
 	       ,t1.sales_district_name
-	       ,t1.customer_group_2_name
-	       ,t1.customer_group_5_name
-	       ,t1.geo_region
-	       ,t1.province_name
-	       ,t1.city_name
-	       ,t1.chain_type_name
-	       ,t1.chain_group_name
-	       ,t1.shop_type_name
-	       ,t1.shop_subtype_name
 	       ,t1.product_brand_name
-	       ,t1.active_custom_code
-	       ,t1.b_product_code
-	       ,t1.b_product_name
 	       ,t1.b_product_category_name
-	       ,t1.b_product_midcategory_name
-	       ,t1.b_product_subcategory_name
-	       ,t1.b_product_cate5_name
-	       ,t1.b_product_strategy
-	       ,t1.new_prod_flag
-	       ,t1.b_stat_weight
-	       ,t1.b_stat_weight_unit_name
-	       ,t1.b_product_barcode
-	       ,t1.b_product_series_name
 	       ,t1.customer_name
 	       ,0              AS pieces
 	       ,0              AS cases
@@ -251,7 +139,7 @@ WITH holiday AS
 	       ,t1.gross_sales AS gross_sales_lly
 	       ,t1.gsv_mdm     AS gsv_mdm_lly
 	FROM fact AS t1
-	LEFT JOIN dim_date_holiday t2
+	LEFT JOIN dim_date t2
 	ON t1.report_date = t2.dt_lly
 	WHERE t2.dt is not null 
 ), union_fact AS
@@ -268,37 +156,10 @@ WITH holiday AS
 (
 	SELECT  t1.data_source
 	       ,t1.report_date
-	       ,t1.dist_code
-	       ,t1.shop_code
-	       ,t1.shop_name
-	       ,t1.dist_name
-	       ,t1.custom_name
-	       ,t1.custom_type
 	       ,t1.business_area_name
 	       ,t1.sales_district_name
-	       ,t1.customer_group_2_name
-	       ,t1.customer_group_5_name
-	       ,t1.geo_region
-	       ,t1.province_name
-	       ,t1.city_name
-	       ,t1.chain_type_name
-	       ,t1.chain_group_name
-	       ,t1.shop_type_name
-	       ,t1.shop_subtype_name
 	       ,t1.product_brand_name
-	       ,t1.active_custom_code
-	       ,t1.b_product_code
-	       ,t1.b_product_name
 	       ,t1.b_product_category_name
-	       ,t1.b_product_midcategory_name
-	       ,t1.b_product_subcategory_name
-	       ,t1.b_product_cate5_name
-	       ,t1.b_product_strategy
-	       ,t1.new_prod_flag
-	       ,t1.b_stat_weight
-	       ,t1.b_stat_weight_unit_name
-	       ,t1.b_product_barcode
-	       ,t1.b_product_series_name
 	       ,t1.customer_name
 	       ,SUM(pieces)          AS pieces
 	       ,SUM(cases)           AS cases
@@ -315,37 +176,10 @@ WITH holiday AS
 	FROM union_fact t1
 	GROUP BY  t1.data_source
 	         ,t1.report_date
-	         ,t1.dist_code
-	         ,t1.shop_code
-	         ,t1.shop_name
-	         ,t1.dist_name
-	         ,t1.custom_name
-	         ,t1.custom_type
 	         ,t1.business_area_name
 	         ,t1.sales_district_name
-	         ,t1.customer_group_2_name
-	         ,t1.customer_group_5_name
-	         ,t1.geo_region
-	         ,t1.province_name
-	         ,t1.city_name
-	         ,t1.chain_type_name
-	         ,t1.chain_group_name
-	         ,t1.shop_type_name
-	         ,t1.shop_subtype_name
 	         ,t1.product_brand_name
-	         ,t1.active_custom_code
-	         ,t1.b_product_code
-	         ,t1.b_product_name
 	         ,t1.b_product_category_name
-	         ,t1.b_product_midcategory_name
-	         ,t1.b_product_subcategory_name
-	         ,t1.b_product_cate5_name
-	         ,t1.b_product_strategy
-	         ,t1.new_prod_flag
-	         ,t1.b_stat_weight
-	         ,t1.b_stat_weight_unit_name
-	         ,t1.b_product_barcode
-	         ,t1.b_product_series_name
 	         ,t1.customer_name
 )
 SELECT  *
