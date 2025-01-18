@@ -10,17 +10,18 @@ WITH fact AS
 	       ,fiscal_month
 	       ,business_area_name
 	       ,product_brand_name
-	       ,SUM(billing_qty)                     AS cases
-	       ,SUM(list_price_revenue_excl_r100)    AS gsv
-	       ,SUM(billing_qty_ly)                  AS case_ly
-	       ,SUM(list_price_revenue_excl_r100_ly) AS gsv_ly
-	       ,SUM(le_case)                         AS le_case
-	       ,SUM(le_gsv)                          AS le_gsv
-	       ,SUM(sp_case)                         AS sp_case
-	       ,SUM(sp_gsv)                          AS sp_gsv
-	       ,SUM(le_case)                         AS st_case
-	       ,SUM(le_gsv)                          AS st_gsv
-	FROM tb_billing_coverpage_fact_test
+	       ,SUM(sellin_case)              AS cases
+	       ,SUM(sellin_gsv)               AS gsv
+	       ,SUM(sellin_case_ly)           AS case_ly
+	       ,SUM(sellin_gsv_ly)            AS gsv_ly
+	       ,SUM(sellin_le_case)           AS le_case
+	       ,SUM(sellin_le_gsv)            AS le_gsv
+	       ,SUM(sellin_sp_case)           AS sp_case
+	       ,SUM(sellin_sp_gsv)            AS sp_gsv
+	       ,SUM(sellin_bonus_target_case) AS st_case
+	       ,SUM(sellin_bonus_target_gsv ) AS st_gsv
+	FROM tb_sellin_coverpage_daily_flat
+	where dt <> ''
 	GROUP BY  fiscal_year
 	         ,fiscal_quarter
 	         ,fiscal_month
