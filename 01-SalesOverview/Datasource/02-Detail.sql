@@ -158,7 +158,7 @@ WITH max_month AS
 	WHERE business_area_name IN ('餐饮', '零售', '电商') 
 )
 SELECT  t1.*
-       ,null                                                                 AS top_customer_name
+       ,''                                                                 AS top_customer_name
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
