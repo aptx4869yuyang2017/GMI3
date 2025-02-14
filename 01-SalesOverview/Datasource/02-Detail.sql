@@ -55,6 +55,7 @@ WITH max_month AS
 	       ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END AS customer_name
+	       ,payer_name -- 2025/2/12 新加
 	       ,product_flavour
 	       ,is_top_dt_customer
 	       ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name              AS stat_weight
@@ -94,7 +95,10 @@ WITH max_month AS
 	       ,SUM(sellout_gsv)                                                                  AS sellout_gsv
 	       ,SUM(sellout_case_ly)                                                              AS sellout_case_ly
 	       ,SUM(sellout_gsv_ly)                                                               AS sellout_gsv_ly
-	FROM tb_sales_overview_detail_fact
+	       ,SUM(sellout_le_case)                                                              AS sellout_le_case
+	       ,SUM(sellout_le_gsv)                                                               AS sellout_le_gsv
+	FROM tb_sales_overview_monthly_flat_qbi
+	WHERE mt <> ''
 	GROUP BY  fiscal_year
 	         ,fiscal_month
 	         ,product_brand_name
@@ -110,61 +114,27 @@ WITH max_month AS
 	         ,product_strategy
 	         ,product_cate5_name
 	         ,new_prod_flag
-	         ,product_flavour
-	         ,is_top_dt_customer
 	         ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name
 	         ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END
+	         ,payer_name -- 2025/2/12 新加
+	         ,product_flavour
+	         ,is_top_dt_customer
 ), fact_multi AS
 (
-	SELECT  '零售-细分'                                                                                AS level_0
-	       ,CASE WHEN customer_group_3_name = '经销商' THEN 'DT'
-	             WHEN customer_group_3_name = 'RKA+LKA' THEN 'RKA'  ELSE customer_group_3_name END AS level_1
-	       ,REPLACE(sales_district_name,'零售--','')                                                 AS level_2
-	       ,'X'                                                                                    AS data_type
+	SELECT  ''  AS level_0
+	       ,''  AS level_1
+	       ,''  AS level_2
+	       ,'Y' AS data_type
 	       ,t.*
 	FROM fact AS t
-	WHERE business_area_name = '零售'
-	AND customer_group_3_name IN ( '经销商', 'RKA+LKA' , 'NKA') 
-	UNION ALL
-	 -- Retail
-	SELECT  'TTL'                                  AS level_0
-	       ,'Retail'                               AS level_1
-	       ,REPLACE(sales_district_name,'零售--','') AS level_2
-	       ,'Y'                                    AS data_type
-	       ,t.*
-	FROM fact AS t
-	WHERE business_area_name = '零售' 
-	UNION ALL
-	SELECT  'TTL'                                                                AS level_0
-	       ,'EC+HEMA'                                                            AS level_1
-	       ,CASE WHEN sales_district_name = '盒马Group' THEN 'HEMA'  ELSE 'EC' END AS level_2
-	       ,'Y'                                                                  AS data_type
-	       ,t.*
-	FROM fact AS t
-	WHERE business_area_name = '电商' 
-	UNION ALL
-	SELECT  'TTL' AS level_0
-	       ,'餐饮'  AS level_1
-	       ,'餐饮'  AS level_2
-	       ,'Y'   AS data_type
-	       ,t.*
-	FROM fact AS t
-	WHERE business_area_name = '餐饮' 
-	UNION ALL
-	SELECT  ''    AS level_0
-	       ,'TTL' AS level_1
-	       ,'TTL' AS level_2
-	       ,'X'   AS data_type
-	       ,t.*
-	FROM fact AS t
-	WHERE business_area_name IN ('餐饮', '零售', '电商') 
+	WHERE business_area_name IN ('零售', '电商', '餐饮') 
 )
 SELECT  t1.*
-       ,CASE WHEN is_top_dt_customer = 'Y' or (customer_group_3_name = 'NKA'  and customer_name not in ('others', 'CVS', '未分配', '家乐福')) THEN customer_name  ELSE 'others' END AS top_customer_name
+       ,CASE WHEN is_top_dt_customer = 'Y' or (customer_group_3_name = 'NKA' AND customer_name NOT IN ('others','CVS','未分配','家乐福')) THEN customer_name  ELSE 'others' END AS top_customer_name
        ,CASE WHEN is_top_dt_customer = 'Y' AND customer_name is not null THEN 'B'
-             WHEN (customer_group_3_name = 'NKA'  and customer_name not in ('others', 'CVS', '未分配', '家乐福')) AND customer_name is not null THEN 'A'  ELSE 'Z' END                 AS customer_name_sort
+             WHEN (customer_group_3_name = 'NKA' AND customer_name NOT IN ('others','CVS','未分配','家乐福')) AND customer_name is not null THEN 'A'  ELSE 'Z' END AS customer_name_sort
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
@@ -176,12 +146,13 @@ SELECT  t1.*
        ,t3.mtd_time_pasting
        ,t3.qtd_time_pasting
        ,t3.ytd_time_pasting
-       ,'Y'                                                                                                       AS act_month_end_filter
+       ,'Y' AS act_month_end_filter
 FROM fact_multi AS t1
 LEFT JOIN dim_date_monthly AS t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
 LEFT JOIN time_past AS t3
 ON t2.fiscal_year = t3.fiscal_year AND t2.fiscal_month = t3.fiscal_month
-WHERE t2.fiscal_year >= 2025
+WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ('哈根达斯'，'湾仔码头')
-AND sales_district_name NOT IN ('达上', '未匹配')
+AND nvl(sales_district_name, '') NOT IN ('达上', '未匹配')
+AND nvl(cases, 0)+nvl(cases_ly, 0)+nvl(sellout_case, 0)+nvl(sellout_gsv_ly, 0)+nvl(sellout_past_case, 0)+nvl(sellout_next_case, 0)+nvl(le_case_org, 0)+nvl(st_case_org, 0)+NVL(sellout_le_case, 0) <> 0 -- 去掉所有都是0的数据行
