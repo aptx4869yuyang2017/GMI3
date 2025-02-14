@@ -55,6 +55,8 @@ WITH max_month AS
 	       ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END AS customer_name
+	       ,product_flavour
+	       ,is_top_dt_customer
 	       ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name              AS stat_weight
 	       ,SUM(sellin_case)                                                                  AS cases
 	       ,SUM(sellin_gsv)                                                                   AS gsv_comp
@@ -108,6 +110,8 @@ WITH max_month AS
 	         ,product_strategy
 	         ,product_cate5_name
 	         ,new_prod_flag
+	         ,product_flavour
+	         ,is_top_dt_customer
 	         ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name
 	         ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
@@ -158,7 +162,9 @@ WITH max_month AS
 	WHERE business_area_name IN ('餐饮', '零售', '电商') 
 )
 SELECT  t1.*
-       ,''                                                                 AS top_customer_name
+       ,CASE WHEN is_top_dt_customer = 'Y' or (customer_group_3_name = 'NKA'  and customer_name not in ('others', 'CVS', '未分配', '家乐福')) THEN customer_name  ELSE 'others' END AS top_customer_name
+       ,CASE WHEN is_top_dt_customer = 'Y' AND customer_name is not null THEN 'B'
+             WHEN (customer_group_3_name = 'NKA'  and customer_name not in ('others', 'CVS', '未分配', '家乐福')) AND customer_name is not null THEN 'A'  ELSE 'Z' END                 AS customer_name_sort
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
@@ -170,7 +176,7 @@ SELECT  t1.*
        ,t3.mtd_time_pasting
        ,t3.qtd_time_pasting
        ,t3.ytd_time_pasting
-       ,'Y' AS act_month_end_filter
+       ,'Y'                                                                                                       AS act_month_end_filter
 FROM fact_multi AS t1
 LEFT JOIN dim_date_monthly AS t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
