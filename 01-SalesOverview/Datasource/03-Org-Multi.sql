@@ -127,7 +127,7 @@ WITH dim_date AS
 	       ,SUM(sellout_case_ly)                                                                                                               AS sellout_case_ly
 	       ,SUM(sellout_gsv_ly)                                                                                                                AS sellout_gsv_ly
 	FROM tb_sales_overview_monthly_flat_qbi
-    where mt <> ''
+	WHERE mt <> ''
 	GROUP BY  fiscal_year
 	         ,fiscal_quarter
 	         ,fiscal_month
@@ -167,18 +167,19 @@ WITH dim_date AS
 	FROM fact AS t
 	WHERE business_area_name = '零售' 
 	UNION ALL
-	SELECT  'TTL'                                                                AS level_0
-	       ,'EC+HEMA'                                                            AS level_1
-	       ,CASE WHEN sales_district_name = '盒马Group' THEN 'HEMA'  ELSE 'EC' END AS level_2
-	       ,'Y'                                                                  AS data_type
+	SELECT  'TTL'                                                         AS level_0
+	       ,'EC+HEMA'                                                     AS level_1
+	       ,CASE WHEN sales_district_name = '盒马Group' THEN 'HEMA'
+	             WHEN sales_district_name = '补差' THEN '补差'  ELSE 'EC' END AS level_2
+	       ,'Y'                                                           AS data_type
 	       ,t.*
 	FROM fact AS t
 	WHERE business_area_name = '电商' 
 	UNION ALL
-	SELECT  'TTL' AS level_0
-	       ,'餐饮'  AS level_1
-	       ,'餐饮'  AS level_2
-	       ,'Y'   AS data_type
+	SELECT  'TTL'                                                         AS level_0
+	       ,'餐饮'                                                          AS level_1
+	       ,CASE WHEN sales_district_name = '补差' THEN '补差'  ELSE '餐饮' END AS level_2
+	       ,'Y'                                                           AS data_type
 	       ,t.*
 	FROM fact AS t
 	WHERE business_area_name = '餐饮' 
@@ -193,7 +194,7 @@ WITH dim_date AS
 	UNION ALL
 	SELECT  ''    AS level_0
 	       ,'TTL' AS level_1
-	       ,'TTL' AS level_2
+	       ,CASE WHEN sales_district_name = '补差' THEN '补差'  ELSE 'TTL' END AS level_2
 	       ,'X'   AS data_type
 	       ,t.*
 	FROM fact AS t
@@ -369,7 +370,7 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM fact_org
-		WHERE level_0 = '' 
+		WHERE level_0 = '' and level_2 <> '补差'
 	) AS ttl
 	ON t1.fiscal_year = ttl.fiscal_year AND t1.fiscal_month = ttl.fiscal_month AND t1.product_brand_name = ttl.product_brand_name
 	UNION ALL
@@ -406,7 +407,7 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM qtd_act
-		WHERE level_0 = '' 
+		WHERE level_0 = '' and level_2 <> '补差'
 	) qtd_ttl
 	ON t1.fiscal_year = qtd_ttl.fiscal_year AND t1.fiscal_month = qtd_ttl.fiscal_month AND t1.product_brand_name = qtd_ttl.product_brand_name
 	UNION ALL
@@ -441,7 +442,7 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM ytd
-		WHERE level_0 = '' 
+		WHERE level_0 = '' and level_2 <> '补差'
 	) AS ttl
 	ON t1.fiscal_year = ttl.fiscal_year AND t1.fiscal_month = ttl.fiscal_month AND t1.product_brand_name = ttl.product_brand_name
 )
