@@ -51,52 +51,52 @@ WITH max_month AS
 	       ,product_subcategory_name
 	       ,product_strategy
 	       ,product_cate5_name
-	       ,new_prod_flag                                                                                                          AS is_new_product_flag
+	       ,new_prod_flag                                                                                                                      AS is_new_product_flag
 	       ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
-	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END                                      AS customer_name
+	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END                                                  AS customer_name
 	       ,payer_name
 	       ,product_flavour
 	       ,is_top_dt_customer
-	       ,CASE WHEN stat_weight_unit_name <> '未匹配' THEN CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name END AS stat_weight
-	       ,SUM(sellin_case)                                                                                                       AS cases
-	       ,SUM(sellin_gsv)                                                                                                        AS gsv_comp
-	       ,SUM(sellin_case_ly)                                                                                                    AS cases_ly
-	       ,SUM(sellin_gsv_ly)                                                                                                     AS gsv_comp_ly
-	       ,SUM(sellin_le_case)                                                                                                    AS le_case_org
-	       ,SUM(sellin_le_gsv)*1e3                                                                                                 AS le_gsv_org
-	       ,SUM(sellin_bonus_target_case)                                                                                          AS st_case_org
-	       ,SUM(sellin_bonus_target_gsv)*1e3                                                                                       AS st_gsv_org
-	       ,SUM(0)                                                                                                                 AS sp_case_org
-	       ,SUM(0)                                                                                                                 AS sp_gsv_org
-	       ,SUM(0)                                                                                                                 AS le_case_customer
-	       ,SUM(0)*1e3                                                                                                             AS le_gsv_customer
-	       ,SUM(0)                                                                                                                 AS sp_case_customer
-	       ,SUM(0)*1e3                                                                                                             AS sp_gsv_customer
-	       ,SUM(0)                                                                                                                 AS st_case_customer
-	       ,SUM(0)*1e3                                                                                                             AS st_gsv_customer
-	       ,SUM(0)                                                                                                                 AS le_case_product
-	       ,SUM(0)*1e3                                                                                                             AS le_gsv_product
-	       ,0                                                                                                                      AS sp_case_product
-	       ,0                                                                                                                      AS sp_gsv_product
-	       ,SUM(stock_case)                                                                                                        AS stock_case
-	       ,SUM(stock_gsv)                                                                                                         AS stock_gsv
-	       ,SUM(stock_case_ly)                                                                                                     AS stock_case_ly
-	       ,SUM(stock_gsv_ly)                                                                                                      AS stock_gsv_ly
-	       ,SUM(sellout_past_28days_case)/28                                                                                       AS sellout_past_case
-	       ,SUM(sellout_past_28days_gsv)/28                                                                                        AS sellout_past_gsv
-	       ,SUM(sellout_next_28days_case)/28                                                                                       AS sellout_next_case
-	       ,SUM(sellout_next_28days_gsv)/28                                                                                        AS sellout_next_gsv
-	       ,SUM(sellout_past_28days_case_ly)/28                                                                                    AS sellout_past_case_ly
-	       ,SUM(sellout_past_28days_gsv_ly)/28                                                                                     AS sellout_past_gsv_ly
-	       ,SUM(sellout_next_28days_case_ly)/28                                                                                    AS sellout_next_case_ly
-	       ,SUM(sellout_next_28days_gsv_ly)/28                                                                                     AS sellout_next_gsv_ly
-	       ,SUM(sellout_case)                                                                                                      AS sellout_case
-	       ,SUM(sellout_gsv)                                                                                                       AS sellout_gsv
-	       ,SUM(sellout_case_ly)                                                                                                   AS sellout_case_ly
-	       ,SUM(sellout_gsv_ly)                                                                                                    AS sellout_gsv_ly
-	       ,SUM(sellout_le_case)                                                                                                   AS sellout_le_case
-	       ,SUM(sellout_le_gsv)                                                                                                    AS sellout_le_gsv
+	       ,CASE WHEN stat_weight_unit_name <> '未匹配' THEN CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name  ELSE '未匹配' END AS stat_weight
+	       ,SUM(sellin_case)                                                                                                                   AS cases
+	       ,SUM(sellin_gsv)                                                                                                                    AS gsv_comp
+	       ,SUM(sellin_case_ly)                                                                                                                AS cases_ly
+	       ,SUM(sellin_gsv_ly)                                                                                                                 AS gsv_comp_ly
+	       ,SUM(sellin_le_case)                                                                                                                AS le_case_org
+	       ,SUM(sellin_le_gsv)*1e3                                                                                                             AS le_gsv_org
+	       ,SUM(sellin_bonus_target_case)                                                                                                      AS st_case_org
+	       ,SUM(sellin_bonus_target_gsv)*1e3                                                                                                   AS st_gsv_org
+	       ,SUM(0)                                                                                                                             AS sp_case_org
+	       ,SUM(0)                                                                                                                             AS sp_gsv_org
+	       ,SUM(0)                                                                                                                             AS le_case_customer
+	       ,SUM(0)*1e3                                                                                                                         AS le_gsv_customer
+	       ,SUM(0)                                                                                                                             AS sp_case_customer
+	       ,SUM(0)*1e3                                                                                                                         AS sp_gsv_customer
+	       ,SUM(0)                                                                                                                             AS st_case_customer
+	       ,SUM(0)*1e3                                                                                                                         AS st_gsv_customer
+	       ,SUM(0)                                                                                                                             AS le_case_product
+	       ,SUM(0)*1e3                                                                                                                         AS le_gsv_product
+	       ,0                                                                                                                                  AS sp_case_product
+	       ,0                                                                                                                                  AS sp_gsv_product
+	       ,SUM(stock_case)                                                                                                                    AS stock_case
+	       ,SUM(stock_gsv)                                                                                                                     AS stock_gsv
+	       ,SUM(stock_case_ly)                                                                                                                 AS stock_case_ly
+	       ,SUM(stock_gsv_ly)                                                                                                                  AS stock_gsv_ly
+	       ,SUM(sellout_past_28days_case)/28                                                                                                   AS sellout_past_case
+	       ,SUM(sellout_past_28days_gsv)/28                                                                                                    AS sellout_past_gsv
+	       ,SUM(sellout_next_28days_case)/28                                                                                                   AS sellout_next_case
+	       ,SUM(sellout_next_28days_gsv)/28                                                                                                    AS sellout_next_gsv
+	       ,SUM(sellout_past_28days_case_ly)/28                                                                                                AS sellout_past_case_ly
+	       ,SUM(sellout_past_28days_gsv_ly)/28                                                                                                 AS sellout_past_gsv_ly
+	       ,SUM(sellout_next_28days_case_ly)/28                                                                                                AS sellout_next_case_ly
+	       ,SUM(sellout_next_28days_gsv_ly)/28                                                                                                 AS sellout_next_gsv_ly
+	       ,SUM(sellout_case)                                                                                                                  AS sellout_case
+	       ,SUM(sellout_gsv)                                                                                                                   AS sellout_gsv
+	       ,SUM(sellout_case_ly)                                                                                                               AS sellout_case_ly
+	       ,SUM(sellout_gsv_ly)                                                                                                                AS sellout_gsv_ly
+	       ,SUM(sellout_le_case)                                                                                                               AS sellout_le_case
+	       ,SUM(sellout_le_gsv)                                                                                                                AS sellout_le_gsv
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
@@ -114,7 +114,7 @@ WITH max_month AS
 	         ,product_strategy
 	         ,product_cate5_name
 	         ,new_prod_flag
-	         ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name
+	         ,CASE WHEN stat_weight_unit_name <> '未匹配' THEN CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name  ELSE '未匹配' END
 	         ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END
