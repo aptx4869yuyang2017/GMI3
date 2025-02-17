@@ -70,7 +70,64 @@ WITH dim_date AS
 	       ,fiscal_month
 	       ,ytd_time_pasting AS time_pasting
 	FROM time_past
-) , fact AS
+) , cte_diff AS
+(
+	SELECT  fiscal_year
+	       ,fiscal_quarter
+	       ,fiscal_month
+	       ,product_brand_name
+	       ,business_area_name
+	       ,'补差'    AS sales_district_name
+	       ,'补差'    AS customer_group_3_name
+	       ,'补差'    AS customer_group_2_name
+	       ,'补差'    AS customer_group_5_name
+	       ,'补差'    AS customer_group_name
+	       ,'补差'    AS product_category_name
+	       ,'补差'    AS product_midcategory_name
+	       ,'补差'    AS product_subcategory_name
+	       ,'补差'    AS product_strategy
+	       ,'补差'    AS product_cate5_name
+	       ,'补差'    AS is_new_product_flag
+	       ,'补差'    AS customer_name
+	       ,'补差'    AS stat_weight
+	       ,0       AS cases
+	       ,0       AS gsv_comp
+	       ,0       AS case_ly
+	       ,0       AS gsv_comp_ly
+	       ,le_case AS le_case_org
+	       ,le_gsv  AS le_gsv_org
+	       ,0       AS st_case_org
+	       ,0       AS st_gsv_org
+	       ,0       AS sp_case_org
+	       ,0       AS sp_gsv_org
+	       ,0       AS le_case_customer
+	       ,0       AS le_gsv_customer
+	       ,0       AS sp_case_customer
+	       ,0       AS sp_gsv_customer
+	       ,0       AS st_case_customer
+	       ,0       AS st_gsv_customer
+	       ,0       AS le_case_product
+	       ,0       AS le_gsv_product
+	       ,0       AS sp_case_product
+	       ,0       AS sp_gsv_product
+	       ,0       AS stock_case
+	       ,0       AS stock_gsv
+	       ,0       AS stock_case_ly
+	       ,0       AS stock_gsv_ly
+	       ,0       AS sellout_past_case
+	       ,0       AS sellout_past_gsv
+	       ,0       AS sellout_next_case
+	       ,0       AS sellout_next_gsv
+	       ,0       AS sellout_past_case_ly
+	       ,0       AS sellout_past_gsv_ly
+	       ,0       AS sellout_next_case_ly
+	       ,0       AS sellout_next_gsv_ly
+	       ,0       AS sellout_case
+	       ,0       AS sellout_gsv
+	       ,0       AS sellout_case_ly
+	       ,0       AS sellout_gsv_ly
+	FROM vw_sellin_target_le_diff
+) , cte_fact_overview AS
 (
 	SELECT  fiscal_year
 	       ,fiscal_month
@@ -146,7 +203,14 @@ WITH dim_date AS
 	         ,new_prod_flag
 	         ,CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name
 	         ,CASE WHEN business_area_name = '零售' AND customer_group_3_name IN ('NKA','RKA','LKA') THEN customer_group_name  ELSE payer_name END
-), fact_multi AS
+), fact AS
+(
+	SELECT  *
+	FROM cte_fact_overview
+	UNION ALL
+	SELECT  *
+	FROM cte_diff
+) , fact_multi AS
 ( -- DT / RK A
 	SELECT  '零售-细分'                                                                                AS level_0
 	       ,CASE WHEN customer_group_3_name = '经销商' THEN 'DT'
@@ -192,10 +256,10 @@ WITH dim_date AS
 	FROM fact AS t
 	WHERE business_area_name = 'Shop' 
 	UNION ALL
-	SELECT  ''    AS level_0
-	       ,'TTL' AS level_1
+	SELECT  ''                                                             AS level_0
+	       ,'TTL'                                                          AS level_1
 	       ,CASE WHEN sales_district_name = '补差' THEN '补差'  ELSE 'TTL' END AS level_2
-	       ,'X'   AS data_type
+	       ,'X'                                                            AS data_type
 	       ,t.*
 	FROM fact AS t
 	WHERE business_area_name IN ('餐饮', '零售', '电商', 'Shop') 
@@ -370,7 +434,8 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM fact_org
-		WHERE level_0 = '' and level_2 <> '补差'
+		WHERE level_0 = ''
+		AND level_2 <> '补差' 
 	) AS ttl
 	ON t1.fiscal_year = ttl.fiscal_year AND t1.fiscal_month = ttl.fiscal_month AND t1.product_brand_name = ttl.product_brand_name
 	UNION ALL
@@ -407,7 +472,8 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM qtd_act
-		WHERE level_0 = '' and level_2 <> '补差'
+		WHERE level_0 = ''
+		AND level_2 <> '补差' 
 	) qtd_ttl
 	ON t1.fiscal_year = qtd_ttl.fiscal_year AND t1.fiscal_month = qtd_ttl.fiscal_month AND t1.product_brand_name = qtd_ttl.product_brand_name
 	UNION ALL
@@ -442,7 +508,8 @@ WITH dim_date AS
 	(
 		SELECT  *
 		FROM ytd
-		WHERE level_0 = '' and level_2 <> '补差'
+		WHERE level_0 = ''
+		AND level_2 <> '补差' 
 	) AS ttl
 	ON t1.fiscal_year = ttl.fiscal_year AND t1.fiscal_month = ttl.fiscal_month AND t1.product_brand_name = ttl.product_brand_name
 )
