@@ -48,7 +48,15 @@ WITH cte_fact AS
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
 )
-SELECT  *
-FROM cte_dim_data_monthly
-WHERE fiscal_year >= 2023
-ORDER BY fiscal_month_conse
+SELECT  t1.*
+       ,t2.fiscal_quart
+       ,t2.fiscal_yp
+       ,t2.fiscal_year_month
+       ,t2.fiscal_month_conse
+       ,t2.fiscal_quarter_conse
+       ,t2.mtd_end
+       ,t2.qtd_end
+       ,t2.ytd_end
+FROM cte_fact t1
+LEFT JOIN cte_dim_data_monthly t2
+ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
