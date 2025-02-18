@@ -20,7 +20,7 @@ WITH fact AS
 	       ,SUM(stock_gsv)                AS stock_gsv
 	       ,SUM(sellout_past_28days_case) AS sellout_past_28days_case
 	       ,SUM(sellout_past_28days_gsv)  AS sellout_past_28days_gsv
-	FROM tb_top_dt_sales_monthly_flat
+	FROM tb_top_dt_sales_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
 	         ,fiscal_quarter
