@@ -1,8 +1,3 @@
--- 临时表说明
--- fact1: tb_billing_coverpage_fact_test 在 日期 + 展示粒度上聚合
--- dim_date: 日期维度
--- b_t/brand_t: business_area_name / product_brand_name 所有数据为了补数据用
--- fact2: 为了计算占比，补齐 business_area_name/product_brand_name 数据 主要是 湾仔没有 shop
 WITH fact AS
 (
 	SELECT  fiscal_year
@@ -21,32 +16,12 @@ WITH fact AS
 	       ,SUM(sellin_bonus_target_case) AS st_case
 	       ,SUM(sellin_bonus_target_gsv ) AS st_gsv
 	FROM tb_sellin_coverpage_daily_flat
-	where dt <> ''
+	WHERE dt <> ''
 	GROUP BY  fiscal_year
 	         ,fiscal_quarter
 	         ,fiscal_month
 	         ,business_area_name
 	         ,product_brand_name
-), dim_date AS
-(
-	SELECT  date_key -- , date_key_ly
-	       ,week_day -- , lunar_date
-	       ,fiscal_year
-	       ,fiscal_month
-	       ,fiscal_quarter
-	       ,fiscal_yp
-	       ,fiscal_day_of_month
-	       ,fiscal_week_of_month
-	       ,fiscal_day_of_year
-	       ,fiscal_week_of_year
-	       ,CONCAT('F',SUBSTR(fiscal_year,-2),' P',SUBSTRING(fiscal_yp,5,2))                                                                           AS fiscal_year_month
-	       ,int(fiscal_year * 12 + fiscal_month)                                                                                                       AS fiscal_month_conse
-	       ,int(fiscal_year * 4 + int(SUBSTRING(fiscal_quarter,-1)))                                                                                   AS fiscal_quarter_conse
-	       ,round(time_pasting_rate_of_month,4)                                                                                                        AS mtd_time_pasting
-	       ,round(time_pasting_rate_of_quarter,4)                                                                                                      AS qtd_time_pasting
-	       ,round(fiscal_day_of_year / (DATEDIFF(TO_DATE(date_key_end_for_target_mtd,'yyyymmdd'),TO_DATE(date_key_start_ytd,'yyyymmdd'),'day') + 1),4) AS ytd_time_pasting
-	       ,1                                                                                                                                          AS join_key
-	FROM vw_dim_gm_date_master
 ), dim_date_monthly AS
 (
 	SELECT  fiscal_year
@@ -56,9 +31,6 @@ WITH fact AS
 	       ,CONCAT('F',SUBSTR(fiscal_year,-2),' P',SUBSTRING(fiscal_yp,5,2)) AS fiscal_year_month
 	       ,int(fiscal_year * 12 + fiscal_month)                             AS fiscal_month_conse
 	       ,int(fiscal_year * 4 + int(SUBSTRING(fiscal_quarter,-1)))         AS fiscal_quarter_conse
-	       ,MAX(date_key_end_for_target_mtd)                                 AS mtd_end
-	       ,MAX(date_key_end_for_target_qtd)                                 AS qtd_end
-	       ,MAX(date_key_end_for_target_ytd)                                 AS ytd_end
 	FROM vw_dim_gm_date_master
 	GROUP BY  fiscal_year
 	         ,fiscal_month
@@ -180,10 +152,32 @@ WITH fact AS
 	       ,t1.st_gsv
 	FROM fact t1
 	UNION ALL
-	SELECT  *
+	SELECT  xtd_type
+	       ,fiscal_year
+	       ,fiscal_month
+	       ,business_area_name
+	       ,product_brand_name
+	       ,cases
+	       ,gsv
+	       ,case_ly
+	       ,gsv_ly
+	       ,le_case
+	       ,le_gsv
+	       ,sp_case
+	       ,sp_gsv
+	       ,st_case
+	       ,st_gsv
 	FROM ytd
 	UNION ALL
-	SELECT  t1.*
+	SELECT  t1.xtd_type
+	       ,t1.fiscal_year
+	       ,t1.fiscal_month
+	       ,t1.business_area_name
+	       ,t1.product_brand_name
+	       ,t1.cases
+	       ,t1.gsv
+	       ,t1.case_ly
+	       ,t1.gsv_ly
 	       ,t2.le_case
 	       ,t2.le_gsv
 	       ,t2.sp_case
@@ -194,15 +188,26 @@ WITH fact AS
 	LEFT JOIN qtd_target t2
 	ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month AND t1.product_brand_name = t2.product_brand_name AND t1.business_area_name = t2.business_area_name
 )
-SELECT  t1.*
+SELECT  t1.xtd_type
+       ,t1.fiscal_year
+       ,t1.fiscal_month
+       ,t1.business_area_name
+       ,t1.product_brand_name
+       ,t1.cases
+       ,t1.gsv
+       ,t1.case_ly
+       ,t1.gsv_ly
+       ,t1.le_case
+       ,t1.le_gsv
+       ,t1.sp_case
+       ,t1.sp_gsv
+       ,t1.st_case
+       ,t1.st_gsv
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
-       ,t2.mtd_end
-       ,t2.qtd_end
-       ,t2.ytd_end
        ,t3.time_pasting
 FROM fact_union t1
 LEFT JOIN dim_date_monthly AS t2
