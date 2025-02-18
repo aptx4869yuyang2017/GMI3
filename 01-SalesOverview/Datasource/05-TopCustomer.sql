@@ -20,6 +20,8 @@ WITH fact AS
 	       ,SUM(stock_gsv)                AS stock_gsv
 	       ,SUM(sellout_past_28days_case) AS sellout_past_28days_case
 	       ,SUM(sellout_past_28days_gsv)  AS sellout_past_28days_gsv
+	       ,SUM(sellout_next_28days_case) AS sellout_next_28days_case
+	       ,SUM(sellout_next_28days_gsv)  AS sellout_next_28days_gsv
 	FROM tb_top_dt_sales_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
@@ -37,11 +39,8 @@ WITH fact AS
 	       ,fiscal_quarter
 	       ,fiscal_yp
 	       ,CONCAT('F',SUBSTR(fiscal_year,-2),' P',SUBSTRING(fiscal_yp,5,2)) AS fiscal_year_month
-	       ,fiscal_month_consecutive as fiscal_month_conse
-	       ,fiscal_quarter_consecutive as fiscal_quarter_conse
-	       ,MAX(end_date_of_fiscal_month)                                    AS mtd_end
-	       ,MAX(end_date_of_fiscal_quarter)                                  AS qtd_end
-	       ,MAX(end_date_of_fiscal_year)                                     AS ytd_end
+	       ,fiscal_month_consecutive                                         AS fiscal_month_conse
+	       ,fiscal_quarter_consecutive                                       AS fiscal_quarter_conse
 	FROM tb_gm_date_master_dim
 	GROUP BY  fiscal_year
 	         ,fiscal_month
@@ -103,6 +102,8 @@ WITH fact AS
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.stock_gsv end)                AS stock_gsv
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_past_28days_case end) AS sellout_past_28days_case
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_past_28days_gsv end)  AS sellout_past_28days_gsv
+	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_next_28days_case end) AS sellout_next_28days_case
+	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_next_28days_gsv end)  AS sellout_next_28days_gsv
 	FROM fact t1
 	LEFT JOIN dim_date_monthly t2
 	ON t1.fiscal_year = t2.fiscal_year
@@ -132,6 +133,8 @@ WITH fact AS
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.stock_gsv end)                AS stock_gsv
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_past_28days_case end) AS sellout_past_28days_case
 	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_past_28days_gsv end)  AS sellout_past_28days_gsv
+	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_next_28days_case end) AS sellout_next_28days_case
+	       ,SUM(case WHEN t1.fiscal_month = t2.fiscal_month THEN t1.sellout_next_28days_gsv end)  AS sellout_next_28days_gsv
 	FROM fact t1
 	LEFT JOIN dim_date_monthly t2
 	ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_quarter = t2.fiscal_quarter
@@ -185,16 +188,56 @@ WITH fact AS
 	       ,t1.stock_gsv
 	       ,t1.sellout_past_28days_case
 	       ,t1.sellout_past_28days_gsv
+	       ,t1.sellout_next_28days_case
+	       ,t1.sellout_next_28days_gsv
 	       ,t1.le_case
 	       ,t1.le_gsv
 	       ,t1.st_case
 	       ,t1.st_gsv
 	FROM fact t1
 	UNION ALL
-	SELECT  *
+	SELECT  xtd_type
+	       ,fiscal_year
+	       ,fiscal_month
+	       ,business_area_name
+	       ,product_brand_name
+	       ,customer_group_3_name
+	       ,payer_cd
+	       ,payer_name
+	       ,cases
+	       ,gsv
+	       ,case_ly
+	       ,gsv_ly
+	       ,stock_case
+	       ,stock_gsv
+	       ,sellout_past_28days_case
+	       ,sellout_past_28days_gsv
+	       ,sellout_next_28days_case
+	       ,sellout_next_28days_gsv
+	       ,le_case
+	       ,le_gsv
+	       ,st_case
+	       ,st_gsv
 	FROM ytd
 	UNION ALL
-	SELECT  t1.*
+	SELECT  t1.xtd_type
+	       ,t1.fiscal_year
+	       ,t1.fiscal_month
+	       ,t1.business_area_name
+	       ,t1.product_brand_name
+	       ,t1.customer_group_3_name
+	       ,t1.payer_cd
+	       ,t1.payer_name
+	       ,t1.cases
+	       ,t1.gsv
+	       ,t1.case_ly
+	       ,t1.gsv_ly
+	       ,t1.stock_case
+	       ,t1.stock_gsv
+	       ,t1.sellout_past_28days_case
+	       ,t1.sellout_past_28days_gsv
+	       ,t1.sellout_next_28days_case
+	       ,t1.sellout_next_28days_gsv
 	       ,t2.le_case
 	       ,t2.le_gsv
 	       ,t2.st_case
@@ -203,15 +246,33 @@ WITH fact AS
 	LEFT JOIN qtd_target t2
 	ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month AND t1.product_brand_name = t2.product_brand_name AND t1.business_area_name = t2.business_area_name
 )
-SELECT  t1.*
+SELECT  t1.xtd_type
+       ,t1.fiscal_year
+       ,t1.fiscal_month
+       ,t1.business_area_name
+       ,t1.product_brand_name
+       ,t1.customer_group_3_name
+       ,t1.payer_cd
+       ,t1.payer_name
+       ,t1.cases
+       ,t1.gsv
+       ,t1.case_ly
+       ,t1.gsv_ly
+       ,t1.stock_case
+       ,t1.stock_gsv
+       ,t1.sellout_past_28days_case
+       ,t1.sellout_past_28days_gsv
+       ,t1.sellout_next_28days_case
+       ,t1.sellout_next_28days_gsv
+       ,t1.le_case
+       ,t1.le_gsv
+       ,t1.st_case
+       ,t1.st_gsv
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
-       ,t2.mtd_end
-       ,t2.qtd_end
-       ,t2.ytd_end
        ,t3.time_pasting
 FROM fact_union t1
 LEFT JOIN dim_date_monthly AS t2
