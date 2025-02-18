@@ -33,30 +33,48 @@ WITH cte_fact AS
 	       ,fiscal_month
 	       ,fiscal_quarter
 	       ,fiscal_yp
-	       ,CONCAT('F',SUBSTR(fiscal_year,-2),' P',SUBSTRING(fiscal_yp,5,2)) AS fiscal_year_month
-	       ,fiscal_month_consecutive                                         AS fiscal_month_conse
-	       ,fiscal_quarter_consecutive                                       AS fiscal_quarter_conse
-	       ,MAX(end_date_of_fiscal_month)                                    AS mtd_end
-	       ,MAX(end_date_of_fiscal_quarter)                                  AS qtd_end
-	       ,MAX(end_date_of_fiscal_year)                                     AS ytd_end
+	       ,CONCAT(fiscal_year_show,' ',fiscal_month_show) AS fiscal_year_month
+	       ,fiscal_month_consecutive                       AS fiscal_month_conse
+	       ,fiscal_quarter_consecutive                     AS fiscal_quarter_conse
 	FROM tb_gm_date_master_dim
 	GROUP BY  fiscal_year
 	         ,fiscal_month
 	         ,fiscal_quarter
 	         ,fiscal_yp
-	         ,CONCAT('F',SUBSTR(fiscal_year,-2),' P',SUBSTRING(fiscal_yp,5,2))
+	         ,CONCAT(fiscal_year_show,' ',fiscal_month_show)
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
 )
-SELECT  t1.*
-       ,t2.fiscal_quart
+SELECT  t1.fiscal_year
+       ,t1.fiscal_month
+       ,t1.fiscal_year_show
+       ,t1.fiscal_month_show
+       ,t1.business_area_name
+       ,t1.customer_group_4_name
+       ,t1.customer_group_3_name
+       ,t1.customer_group_name
+       ,t1.sales_district_name
+       ,t1.customer_group_2_name
+       ,t1.customer_group_5_name
+       ,t1.product_code
+       ,t1.product_name
+       ,t1.product_brand_name
+       ,t1.product_category_name
+       ,t1.warehouse
+       ,t1.cases_demand_M0
+       ,t1.gsv_demand_M0
+       ,t1.cases_demand_M1
+       ,t1.gsv_demand_M1
+       ,t1.cases_demand_M3
+       ,t1.gsv_demand_M3
+       ,t1.cases_act
+       ,t1.gsv_act
+       ,t1.created_dt
+       ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
-       ,t2.mtd_end
-       ,t2.qtd_end
-       ,t2.ytd_end
 FROM cte_fact t1
 LEFT JOIN cte_dim_data_monthly t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
