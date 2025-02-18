@@ -15,6 +15,8 @@ WITH cte_fact AS
 	       ,product_name
 	       ,product_brand_name
 	       ,product_category_name
+	       ,product_midcategory_name
+	       ,stat_weight
 	       ,warehouse
 	       ,cases_demand_M0
 	       ,gsv_demand_M0
@@ -24,6 +26,8 @@ WITH cte_fact AS
 	       ,gsv_demand_M3
 	       ,cases_act
 	       ,gsv_act
+	       ,cases_act_ly
+	       ,gsv_act_ly
 	       ,cast(to_date(substring(created_dt,1,10),'yyyy-mm-dd') AS date) AS created_dt
 	FROM tb_sellin_demand_accuracy_flat_qbi
 	WHERE mt <> '' 
@@ -45,31 +49,7 @@ WITH cte_fact AS
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
 )
-SELECT  t1.fiscal_year
-       ,t1.fiscal_month
-       ,t1.fiscal_year_show
-       ,t1.fiscal_month_show
-       ,t1.business_area_name
-       ,t1.customer_group_4_name
-       ,t1.customer_group_3_name
-       ,t1.customer_group_name
-       ,t1.sales_district_name
-       ,t1.customer_group_2_name
-       ,t1.customer_group_5_name
-       ,t1.product_code
-       ,t1.product_name
-       ,t1.product_brand_name
-       ,t1.product_category_name
-       ,t1.warehouse
-       ,t1.cases_demand_M0
-       ,t1.gsv_demand_M0
-       ,t1.cases_demand_M1
-       ,t1.gsv_demand_M1
-       ,t1.cases_demand_M3
-       ,t1.gsv_demand_M3
-       ,t1.cases_act
-       ,t1.gsv_act
-       ,t1.created_dt
+SELECT  t1.*
        ,t2.fiscal_quarter
        ,t2.fiscal_yp
        ,t2.fiscal_year_month
@@ -78,3 +58,4 @@ SELECT  t1.fiscal_year
 FROM cte_fact t1
 LEFT JOIN cte_dim_data_monthly t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
+WHERE product_brand_name IN ('湾仔码头', '哈根达斯')
