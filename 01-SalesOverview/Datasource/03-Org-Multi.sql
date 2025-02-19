@@ -1,4 +1,4 @@
-SELECT  t1.date_type as union_type
+SELECT  t1.date_range_type as union_type
        ,t1.fiscal_year
        ,t1.fiscal_month
        ,t1.level_0
