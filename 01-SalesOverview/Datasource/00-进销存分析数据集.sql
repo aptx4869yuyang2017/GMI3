@@ -71,6 +71,10 @@ WITH dim_date_monthly AS
 	       ,SUM(sellout_gsv_ly)                                                                                                                AS sellout_gsv_ly
 	       ,SUM(sellout_le_case)                                                                                                               AS sellout_le_case
 	       ,SUM(sellout_le_gsv)                                                                                                                AS sellout_le_gsv
+	       ,sum(sellout_case_incl_promotion) as sellout_case_incl_promotion
+	       ,sum(sellout_gsv_incl_promotion) as sellout_gsv_incl_promotion
+	       ,sum(sellout_case_incl_promotion_ly) as sellout_case_incl_promotion_ly
+	       ,sum(sellout_gsv_incl_promotion_ly) as sellout_gsv_incl_promotion_ly
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
