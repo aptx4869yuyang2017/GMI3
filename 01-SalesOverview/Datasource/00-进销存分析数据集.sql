@@ -7,9 +7,9 @@ WITH dim_date_monthly AS
 	       ,CONCAT( fiscal_year_show,' ',fiscal_month_show) AS fiscal_year_month
 	       ,fiscal_month_consecutive                        AS fiscal_month_conse
 	       ,fiscal_quarter_consecutive                      AS fiscal_quarter_conse
-	       ,round(time_pasting_rate_of_month,4)             AS mtd_time_pasting
-	       ,round(time_pasting_rate_of_quarter,4)           AS qtd_time_pasting
-	       ,round(time_pasting_rate_of_year,4)              AS ytd_time_pasting
+	       ,round(MAX(time_pasting_rate_of_month),4)        AS mtd_time_pasting
+	       ,round(MAX(time_pasting_rate_of_quarter),4)      AS qtd_time_pasting
+	       ,round(MAX(time_pasting_rate_of_year),4)         AS ytd_time_pasting
 	FROM tb_gm_date_master_dim
 	GROUP BY  fiscal_year
 	         ,fiscal_month
@@ -18,9 +18,6 @@ WITH dim_date_monthly AS
 	         ,CONCAT( fiscal_year_show,' ',fiscal_month_show)
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
-	         ,round(time_pasting_rate_of_month,4)
-	         ,round(time_pasting_rate_of_quarter,4)
-	         ,round(time_pasting_rate_of_year,4)
 ), fact AS
 (
 	SELECT  fiscal_year
@@ -71,10 +68,10 @@ WITH dim_date_monthly AS
 	       ,SUM(sellout_gsv_ly)                                                                                                                AS sellout_gsv_ly
 	       ,SUM(sellout_le_case)                                                                                                               AS sellout_le_case
 	       ,SUM(sellout_le_gsv)                                                                                                                AS sellout_le_gsv
-	       ,sum(sellout_case_incl_promotion) as sellout_case_incl_promotion
-	       ,sum(sellout_gsv_incl_promotion) as sellout_gsv_incl_promotion
-	       ,sum(sellout_case_incl_promotion_ly) as sellout_case_incl_promotion_ly
-	       ,sum(sellout_gsv_incl_promotion_ly) as sellout_gsv_incl_promotion_ly
+	       ,SUM(sellout_case_incl_promotion)                                                                                                   AS sellout_case_incl_promotion
+	       ,SUM(sellout_gsv_incl_promotion)                                                                                                    AS sellout_gsv_incl_promotion
+	       ,SUM(sellout_case_incl_promotion_ly)                                                                                                AS sellout_case_incl_promotion_ly
+	       ,SUM(sellout_gsv_incl_promotion_ly)                                                                                                 AS sellout_gsv_incl_promotion_ly
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
