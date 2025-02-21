@@ -52,6 +52,14 @@ WITH dim_date AS
 	       ,SUM(cases)                             AS cases
 	       ,SUM(gross_sales)                       AS gross_sales
 	       ,SUM(gsv_mdm)                           AS gsv_mdm
+	       ,SUM(pieces_incl_promotion)             AS pieces_incl_promotion
+	       ,SUM(cases_incl_promotion)              AS cases_incl_promotion
+	       ,SUM(gross_sales_incl_promotion)        AS gross_sales_incl_promotion
+	       ,SUM(gsv_mdm_incl_promotion)            AS gsv_mdm_incl_promotion
+	       ,SUM(gross_sales_incl_vat)              AS gross_sales_incl_vat
+	       ,SUM(gsv_mdm_incl_vat)                  AS gsv_mdm_incl_vat
+	       ,SUM(gross_sales_incl_promotion_vat)    AS gross_sales_incl_promotion_vat
+	       ,SUM(gsv_mdm_incl_promotion_vat)        AS gsv_mdm_incl_promotion_vat
 	       ,SUM(pieces_ly)                         AS pieces_ly
 	       ,SUM(cases_ly)                          AS cases_ly
 	       ,SUM(gross_sales_ly)                    AS gross_sales_ly
@@ -162,6 +170,14 @@ SELECT  t1.data_source
        ,t1.cases
        ,t1.gross_sales
        ,t1.gsv_mdm
+       ,t1.pieces_incl_promotion
+       ,t1.cases_incl_promotion
+       ,t1.gross_sales_incl_promotion
+       ,t1.gsv_mdm_incl_promotion
+       ,t1.gross_sales_incl_vat
+       ,t1.gsv_mdm_incl_vat
+       ,t1.gross_sales_incl_promotion_vat
+       ,t1.gsv_mdm_incl_promotion_vat
        ,t1.pieces_ly
        ,t1.cases_ly
        ,t1.gross_sales_ly
