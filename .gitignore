@@ -4,3 +4,4 @@
 # 忽略所有Excel文件（xls和xlsx）
 *.xls
 *.xlsx
+01-SalesOverview/Datasource/tmp.sql
