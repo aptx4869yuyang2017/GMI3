@@ -24,12 +24,12 @@ WITH cte_fact AS
 	       ,gsv_demand_M1
 	       ,cases_demand_M3
 	       ,gsv_demand_M3
-	       ,cases_act
-	       ,gsv_act
+	       ,nvl(cases_act,0)                                               AS cases_act
+	       ,nvl(gsv_act,0)                                                 AS gsv_act
 	       ,cases_act_ly
 	       ,gsv_act_ly
 	       ,cast(to_date(substring(created_dt,1,10),'yyyy-mm-dd') AS date) AS created_dt
-	FROM tb_sellin_demand_accuracy_flat_qbi
+	FROM vw_sellin_demand_accuracy_flat_qbi
 	WHERE mt <> '' 
 ), cte_dim_data_monthly AS
 (
