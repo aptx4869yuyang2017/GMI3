@@ -106,6 +106,7 @@ SELECT  t1.*
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
+       ,MAX(t2.fiscal_quarter_conse) OVER () AS max_fiscal_quarter_conse
        ,t2.mtd_time_pasting
        ,t2.qtd_time_pasting
        ,t2.ytd_time_pasting
