@@ -27,7 +27,8 @@ SELECT  t1.date_range_type as union_type
        ,t1.fiscal_month_conse
        ,t1.fiscal_quarter_conse
        ,t1.time_pasting
-FROM vw_sales_overview_channel_analysis_flat_qbi AS t1
-WHERE t1.fiscal_year >= 2025
+FROM vw_sales_overview_channel_anal_monthly_flat_qbi AS t1
+WHERE t1.fiscal_year >= 2024
 AND t1.product_brand_name IN ('哈根达斯', '湾仔码头')
 AND t1.level_2 NOT IN ('达上', '未匹配')
+and level_2 <> '公司调整项'
