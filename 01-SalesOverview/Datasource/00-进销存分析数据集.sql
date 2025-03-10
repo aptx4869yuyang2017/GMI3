@@ -18,7 +18,28 @@ WITH dim_date_monthly AS
 	         ,CONCAT( fiscal_year_show,' ',fiscal_month_show)
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
-), fact AS
+), cte_year_max AS
+(
+	SELECT  fiscal_year
+	       ,MAX(fiscal_month_consecutive)   AS year_max_fiscal_month_conse
+	       ,MAX(fiscal_quarter_consecutive) AS year_max_fiscal_quarter_conse
+	FROM tb_gm_date_master_dim
+	WHERE date_key <= TO_CHAR( (
+	SELECT  to_date( substring(MAX(created_dt),1,10),'yyyy-mm-dd' )
+	FROM tb_sales_overview_monthly_flat_qbi
+	WHERE mt <> ''), 'yyyymmdd' )
+	GROUP BY  fiscal_year
+), cte_current AS
+(
+	SELECT  0                               AS join_key
+	       ,MAX(fiscal_month_consecutive)   AS current_fiscal_month_conse
+	       ,MAX(fiscal_quarter_consecutive) AS current_fiscal_quarter_conse
+	FROM tb_gm_date_master_dim
+	WHERE date_key <= TO_CHAR( (
+	SELECT  to_date( substring(MAX(created_dt),1,10),'yyyy-mm-dd' )
+	FROM tb_sales_overview_monthly_flat_qbi
+	WHERE mt <> ''), 'yyyymmdd' ) 
+) , fact AS
 (
 	SELECT  fiscal_year
 	       ,fiscal_month
@@ -72,6 +93,7 @@ WITH dim_date_monthly AS
 	       ,SUM(sellout_gsv_incl_promotion)                                                                                                    AS sellout_gsv_incl_promotion
 	       ,SUM(sellout_case_incl_promotion_ly)                                                                                                AS sellout_case_incl_promotion_ly
 	       ,SUM(sellout_gsv_incl_promotion_ly)                                                                                                 AS sellout_gsv_incl_promotion_ly
+	       ,0                                                                                                                                  AS join_key
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
@@ -106,15 +128,24 @@ SELECT  t1.*
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
-       ,MAX(t2.fiscal_quarter_conse) OVER () AS max_fiscal_quarter_conse
+       ,t3.year_max_fiscal_month_conse   AS max_fiscal_month_conse
+       ,t3.year_max_fiscal_quarter_conse AS max_fiscal_quarter_conse
+       ,t4.current_fiscal_month_conse    AS current_fiscal_month_conse
+       ,t4.current_fiscal_quarter_conse  AS current_fiscal_quarter_conse
        ,t2.mtd_time_pasting
        ,t2.qtd_time_pasting
        ,t2.ytd_time_pasting
 FROM fact AS t1
 LEFT JOIN dim_date_monthly AS t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
+LEFT JOIN cte_year_max AS t3
+ON t1.fiscal_year = t3.fiscal_year
+LEFT JOIN cte_current AS t4
+ON t4.join_key = t1.join_key
 WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ( '哈根达斯' , '湾仔码头' )
 AND nvl(sales_district_name, '') NOT IN ( '达上', '未匹配', '未分配' )
 AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
-AND not( nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 )
+AND not(t2.fiscal_month_conse < (
+SELECT  MAX(year_max_fiscal_month_conse)
+FROM cte_year_max) AND nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 )
