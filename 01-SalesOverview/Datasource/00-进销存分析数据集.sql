@@ -34,6 +34,7 @@ WITH dim_date_monthly AS
 	SELECT  0                               AS join_key
 	       ,MAX(fiscal_month_consecutive)   AS current_fiscal_month_conse
 	       ,MAX(fiscal_quarter_consecutive) AS current_fiscal_quarter_conse
+           ,MAX(fiscal_year) AS current_fiscal_year
 	FROM tb_gm_date_master_dim
 	WHERE date_key <= TO_CHAR( (
 	SELECT  to_date( substring(MAX(created_dt),1,10),'yyyy-mm-dd' )
@@ -132,6 +133,7 @@ SELECT  t1.*
        ,t3.year_max_fiscal_quarter_conse AS max_fiscal_quarter_conse
        ,t4.current_fiscal_month_conse    AS current_fiscal_month_conse
        ,t4.current_fiscal_quarter_conse  AS current_fiscal_quarter_conse
+       ,t4.current_fiscal_year as current_fiscal_year
        ,t2.mtd_time_pasting
        ,t2.qtd_time_pasting
        ,t2.ytd_time_pasting
