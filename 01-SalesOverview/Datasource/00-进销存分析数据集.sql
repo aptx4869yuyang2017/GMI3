@@ -34,7 +34,7 @@ WITH dim_date_monthly AS
 	SELECT  0                               AS join_key
 	       ,MAX(fiscal_month_consecutive)   AS current_fiscal_month_conse
 	       ,MAX(fiscal_quarter_consecutive) AS current_fiscal_quarter_conse
-           ,MAX(fiscal_year) AS current_fiscal_year
+	       ,MAX(fiscal_year)                AS current_fiscal_year
 	FROM tb_gm_date_master_dim
 	WHERE date_key <= TO_CHAR( (
 	SELECT  to_date( substring(MAX(created_dt),1,10),'yyyy-mm-dd' )
@@ -95,6 +95,7 @@ WITH dim_date_monthly AS
 	       ,SUM(sellout_case_incl_promotion_ly)                                                                                                AS sellout_case_incl_promotion_ly
 	       ,SUM(sellout_gsv_incl_promotion_ly)                                                                                                 AS sellout_gsv_incl_promotion_ly
 	       ,0                                                                                                                                  AS join_key
+	       ,MAX(created_dt)                                                                                                                    AS created_dt
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt <> ''
 	GROUP BY  fiscal_year
@@ -120,7 +121,56 @@ WITH dim_date_monthly AS
 	         ,product_flavour
 	         ,is_top_dt_customer
 )
-SELECT  t1.*
+SELECT  t1.fiscal_year
+       ,t1.fiscal_month
+       ,t1.product_brand_name
+       ,t1.business_area_name
+       ,t1.sales_district_name
+       ,t1.customer_group_3_name
+       ,t1.customer_group_2_name
+       ,t1.customer_group_5_name
+       ,t1.customer_group_name
+       ,t1.product_category_name
+       ,t1.product_midcategory_name
+       ,t1.product_subcategory_name
+       ,t1.product_strategy
+       ,t1.product_cate5_name
+       ,t1.is_new_product_flag
+       ,t1.customer_name
+       ,t1.payer_name
+       ,t1.product_flavour
+       ,t1.is_top_dt_customer
+       ,t1.stat_weight
+       ,t1.cases
+       ,t1.gsv_comp
+       ,t1.cases_ly
+       ,t1.gsv_comp_ly
+       ,t1.le_case_org
+       ,t1.le_gsv_org
+       ,t1.st_case_org
+       ,t1.st_gsv_org
+       ,t1.stock_case
+       ,t1.stock_gsv
+       ,t1.stock_case_ly
+       ,t1.stock_gsv_ly
+       ,t1.sellout_past_case
+       ,t1.sellout_past_gsv
+       ,t1.sellout_next_case
+       ,t1.sellout_next_gsv
+       ,t1.sellout_past_case_ly
+       ,t1.sellout_past_gsv_ly
+       ,t1.sellout_next_case_ly
+       ,t1.sellout_next_gsv_ly
+       ,t1.sellout_case
+       ,t1.sellout_gsv
+       ,t1.sellout_case_ly
+       ,t1.sellout_gsv_ly
+       ,t1.sellout_le_case
+       ,t1.sellout_le_gsv
+       ,t1.sellout_case_incl_promotion
+       ,t1.sellout_gsv_incl_promotion
+       ,t1.sellout_case_incl_promotion_ly
+       ,t1.sellout_gsv_incl_promotion_ly
        ,CASE WHEN is_top_dt_customer = 'Y' or ( customer_group_3_name = 'NKA' AND customer_name NOT IN ( 'others','CVS','未分配','家乐福' ) ) THEN customer_name  ELSE 'others' END AS top_customer_name
        ,CASE WHEN is_top_dt_customer = 'Y' AND customer_name is not null THEN 'B'
              WHEN ( customer_group_3_name = 'NKA' AND customer_name NOT IN ( 'others','CVS','未分配','家乐福' ) ) AND customer_name is not null THEN 'A'  ELSE 'Z' END AS customer_name_sort
@@ -129,14 +179,16 @@ SELECT  t1.*
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
-       ,t3.year_max_fiscal_month_conse   AS max_fiscal_month_conse
-       ,t3.year_max_fiscal_quarter_conse AS max_fiscal_quarter_conse
-       ,t4.current_fiscal_month_conse    AS current_fiscal_month_conse
-       ,t4.current_fiscal_quarter_conse  AS current_fiscal_quarter_conse
-       ,t4.current_fiscal_year as current_fiscal_year
+       ,t3.year_max_fiscal_month_conse                                                 AS max_fiscal_month_conse
+       ,t3.year_max_fiscal_quarter_conse                                               AS max_fiscal_quarter_conse
+       ,t4.current_fiscal_month_conse                                                  AS current_fiscal_month_conse
+       ,t4.current_fiscal_quarter_conse                                                AS current_fiscal_quarter_conse
+       ,t4.current_fiscal_year                                                         AS current_fiscal_year
        ,t2.mtd_time_pasting
        ,t2.qtd_time_pasting
        ,t2.ytd_time_pasting
+       ,cast(to_date(substring(t1.created_dt,1,10),'yyyy-mm-dd') AS date)              AS created_dt
+       ,cast(date_add(to_date(substring(t1.created_dt,1,10),'yyyy-mm-dd'),-1) AS date) AS create_dt_yesterday
 FROM fact AS t1
 LEFT JOIN dim_date_monthly AS t2
 ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
