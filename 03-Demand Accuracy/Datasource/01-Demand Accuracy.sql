@@ -19,11 +19,11 @@ WITH cte_fact AS
 	       ,stat_weight
 	       ,warehouse
 	       ,cases_demand_m0
-	       ,gsv_demand_m0 * 1e3
+	       ,gsv_demand_m0 * 1e3                                            AS gsv_demand_m0
 	       ,cases_demand_m1
-	       ,gsv_demand_m1 * 1e3
+	       ,gsv_demand_m1 * 1e3                                            AS gsv_demand_m1
 	       ,cases_demand_m3
-	       ,gsv_demand_m3 * 1e3
+	       ,gsv_demand_m3 * 1e3                                            AS gsv_demand_m3
 	       ,nvl(cases_act,0)                                               AS cases_act
 	       ,nvl(gsv_act,0)                                                 AS gsv_act
 	       ,cases_act_ly
