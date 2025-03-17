@@ -97,7 +97,7 @@ WITH dim_date_monthly AS
 	       ,0                                                                                                                                  AS join_key
 	       ,MAX(created_dt)                                                                                                                    AS created_dt
 	FROM tb_sales_overview_monthly_flat_qbi
-	WHERE mt <> ''
+	WHERE mt >= '202401'
 	GROUP BY  fiscal_year
 	         ,fiscal_month
 	         ,product_brand_name
@@ -125,7 +125,7 @@ SELECT  t1.fiscal_year
        ,t1.fiscal_month
        ,t1.product_brand_name
        ,t1.business_area_name
-       ,t1.sales_district_name
+       ,nvl(t1.sales_district_name,'') as sales_district_name
        ,t1.customer_group_3_name
        ,t1.customer_group_2_name
        ,t1.customer_group_5_name
@@ -198,8 +198,8 @@ LEFT JOIN cte_current AS t4
 ON t4.join_key = t1.join_key
 WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ( '哈根达斯' , '湾仔码头' )
-AND nvl(sales_district_name, '') NOT IN ( '达上', '未匹配', '未分配' )
-AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
+AND nvl(sales_district_name, '') NOT IN ( '达上' )
+-- AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
 AND not(t2.fiscal_month_conse < (
 SELECT  MAX(year_max_fiscal_month_conse)
 FROM cte_year_max) AND nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 )
