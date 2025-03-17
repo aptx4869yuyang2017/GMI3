@@ -22,5 +22,5 @@ SELECT  t1.date_range_type                                                      
        ,cast(to_date(substring(created_dt,1,10),'yyyy-mm-dd') AS date)              AS created_dt
        ,cast(date_add(to_date(substring(created_dt,1,10),'yyyy-mm-dd'),-1) AS date) AS create_dt_yesterday
 FROM vw_sellin_coverpage_monthly_flat_qbi t1
-WHERE t1.fiscal_year >= 2025
+WHERE t1.fiscal_year >= 2024
 AND t1.product_brand_name IN ('哈根达斯', '湾仔码头')
