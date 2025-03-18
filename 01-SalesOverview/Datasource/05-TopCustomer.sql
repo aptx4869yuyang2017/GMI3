@@ -27,5 +27,5 @@ SELECT  t1.xtd_type
        ,t1.fiscal_quarter_conse
        ,t1.time_pasting
 FROM vw_top_customer_sales_flat_qbi t1
-WHERE t1.fiscal_year >= 2025
+WHERE t1.fiscal_year >= 2024
 AND t1.product_brand_name IN ('哈根达斯', '湾仔码头')
