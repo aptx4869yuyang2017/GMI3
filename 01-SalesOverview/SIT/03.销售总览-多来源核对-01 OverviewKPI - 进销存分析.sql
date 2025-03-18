@@ -4,7 +4,7 @@ WITH coverpage AS
 	       ,business_area_name
 	       ,fiscal_month
 	       ,SUM(cases) AS sellin_case
-	FROM vw_sellin_coverpage_monthly_flat_qbi
+	FROM vw_sellin_coverpage_monthly_flat_qbi --销售总览-01OverviewKPI
 	WHERE date_range_type = 'MTD'
 	AND fiscal_year = 2025
 	AND fiscal_month IN (9, 10)
@@ -18,7 +18,7 @@ WITH coverpage AS
 	       ,business_area_name
 	       ,fiscal_month
 	       ,SUM(sellin_case) AS sellin_case
-	FROM tb_sales_overview_monthly_flat_qbi
+	FROM tb_sales_overview_monthly_flat_qbi -- Non-Shop-进销存分析数据集
 	WHERE mt <> ''
 	AND fiscal_year = 2025
 	AND fiscal_month IN (9, 10)
