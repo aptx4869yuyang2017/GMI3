@@ -198,7 +198,7 @@ LEFT JOIN cte_current AS t4
 ON t4.join_key = t1.join_key
 WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ( '哈根达斯' , '湾仔码头' )
-AND nvl(sales_district_name, '') NOT IN ( '达上' )
+-- AND nvl(sales_district_name, '') NOT IN ( '达上', '未匹配', '未分配' )
 -- AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
 AND not(t2.fiscal_month_conse < (
 SELECT  MAX(year_max_fiscal_month_conse)
