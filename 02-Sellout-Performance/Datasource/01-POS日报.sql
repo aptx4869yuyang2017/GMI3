@@ -64,8 +64,11 @@ WITH cte_fact AS
 	FROM tb_pos_sales_calendar_flat_qbi
 	WHERE dt >= '20240101'
 	AND product_brand_name IN ('湾仔码头' ， '哈根达斯')
-	AND business_area_name IN ('零售')
-	AND customer_name IN ('世纪联华', '华润万家', '农工商', '北京华联' , '大润发', '大统华', '天虹商场', '家家悦' , '山姆', '新华都', '易初莲花', '永辉' , '沃尔玛', '物美', '联华', '苏果', '麦德龙') 
+	AND (
+        (business_area_name = '零售' AND customer_name IN ('世纪联华', '华润万家', '农工商', '北京华联' , '大润发', '大统华', '天虹商场', '家家悦' , '山姆', '新华都', '易初莲花', '永辉' , '沃尔玛', '物美', '联华', '苏果', '麦德龙')) 
+        or
+        (business_area_name = '电商' and customer_name = '盒马')
+    )
 ) , cte_next_month AS
 (
 	SELECT  MAX(to_char(cast(add_months(date_add(to_date(substring(created_dt,1,10),'yyyy-mm-dd'),-2),1) AS date),'yyyyMM')) AS next_month
