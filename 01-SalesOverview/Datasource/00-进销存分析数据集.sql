@@ -4,6 +4,8 @@ WITH dim_date_monthly AS
 	       ,fiscal_month
 	       ,fiscal_quarter
 	       ,fiscal_yp
+	       ,fiscal_month_show
+	       ,fiscal_year_show
 	       ,CONCAT( fiscal_year_show,' ',fiscal_month_show) AS fiscal_year_month
 	       ,fiscal_month_consecutive                        AS fiscal_month_conse
 	       ,fiscal_quarter_consecutive                      AS fiscal_quarter_conse
@@ -15,6 +17,8 @@ WITH dim_date_monthly AS
 	         ,fiscal_month
 	         ,fiscal_quarter
 	         ,fiscal_yp
+	         ,fiscal_month_show
+	         ,fiscal_year_show
 	         ,CONCAT( fiscal_year_show,' ',fiscal_month_show)
 	         ,fiscal_month_consecutive
 	         ,fiscal_quarter_consecutive
@@ -125,7 +129,7 @@ SELECT  t1.fiscal_year
        ,t1.fiscal_month
        ,t1.product_brand_name
        ,t1.business_area_name
-       ,nvl(t1.sales_district_name,'') as sales_district_name
+       ,nvl(t1.sales_district_name,'')                                                 AS sales_district_name
        ,t1.customer_group_3_name
        ,t1.customer_group_2_name
        ,t1.customer_group_5_name
@@ -179,6 +183,8 @@ SELECT  t1.fiscal_year
        ,t2.fiscal_year_month
        ,t2.fiscal_month_conse
        ,t2.fiscal_quarter_conse
+       ,t2.fiscal_month_show
+       ,t2.fiscal_year_show
        ,t3.year_max_fiscal_month_conse                                                 AS max_fiscal_month_conse
        ,t3.year_max_fiscal_quarter_conse                                               AS max_fiscal_quarter_conse
        ,t4.current_fiscal_month_conse                                                  AS current_fiscal_month_conse
@@ -200,6 +206,6 @@ WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ( '哈根达斯' , '湾仔码头' )
 -- AND nvl(sales_district_name, '') NOT IN ( '达上', '未匹配', '未分配' )
 -- AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
-AND not(t2.fiscal_month_conse < (
+AND not(t2.fiscal_month_conse <= (
 SELECT  MAX(year_max_fiscal_month_conse)
-FROM cte_year_max) AND nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 )
+FROM cte_year_max) AND nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 AND nvl(sellout_case_incl_promotion, 0) = 0 AND nvl(sellout_gsv_incl_promotion, 0) = 0 AND nvl(sellout_case_incl_promotion_ly, 0) = 0 AND nvl(sellout_gsv_incl_promotion_ly, 0) = 0)
