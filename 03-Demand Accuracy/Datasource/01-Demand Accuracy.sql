@@ -13,11 +13,14 @@ WITH cte_fact AS
 	       ,product_code
 	       ,product_name
 	       ,product_brand_name
+           ,product_category_name
 	       ,product_midcategory_name
 	       ,product_name_abbr
 	       ,is_npd
 	       ,stat_weight
 	       ,warehouse
+           ,product_series_name
+           ,version_dmd
 	       ,cases_demand_m0
 	       ,gsv_demand_m0 * 1e3                                            AS gsv_demand_m0
 	       ,cases_demand_m1
@@ -29,6 +32,7 @@ WITH cte_fact AS
 	       ,cases_act_ly
 	       ,gsv_act_ly
 	       ,cast(to_date(substring(created_dt,1,10),'yyyy-mm-dd') AS date) AS created_dt
+	       ,cast(date_add(to_date(substring(created_dt,1,10),'yyyy-mm-dd'),-1) AS date) AS busi_dt
 	FROM vw_sellin_demand_accuracy_flat_qbi
 	WHERE mt <> '' 
 ), cte_dim_data_monthly AS
