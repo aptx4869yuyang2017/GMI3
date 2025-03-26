@@ -37,7 +37,6 @@ WITH dim_date AS
 	       ,product_brand_name
 	       ,active_custom_code
 	       ,product_category_name                  AS b_product_category_name
-	       ,CASE WHEN data_source = 'DMS' THEN dist_name  ELSE custom_name END 客户名称
 	       ,SUM(pieces)                            AS pieces
 	       ,SUM(cases)                             AS cases
 	       ,SUM(gross_sales)                       AS gross_sales
@@ -96,7 +95,6 @@ WITH dim_date AS
 	         ,product_brand_name
 	         ,active_custom_code
 	         ,product_category_name
-	         ,CASE WHEN data_source = 'DMS' THEN dist_name  ELSE custom_name END
 	         ,dw_source_system
 	         ,dw_source_table
 )
@@ -132,7 +130,7 @@ SELECT  t1.data_source
        ,t1.product_brand_name
        ,t1.active_custom_code
        ,t1.b_product_category_name
-       ,nvl(t1.customer_group_name,t1.custom_name) AS 客户名称 -- 临时修改名称
+       ,case when custom_type = '直营' THEN customer_group_name else t1.dist_name end AS 客户名称 
        ,t1.pieces
        ,t1.cases
        ,t1.gross_sales
@@ -166,4 +164,4 @@ SELECT  t1.data_source
 FROM fact t1
 LEFT JOIN dim_date AS t2
 ON t1.report_date = t2.date_key
-WHERE nvl(t1.product_brand_name, '') NOT IN ('维邦')
+WHERE t1.product_brand_name in ('哈根达斯', '湾仔码头')
