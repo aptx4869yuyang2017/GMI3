@@ -65,6 +65,7 @@ WITH dim_date_monthly AS
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END                                                  AS customer_name
 	       ,payer_name
+           ,payer_cd
 	       ,product_flavour
 	       ,is_top_dt_customer
 	       ,CASE WHEN stat_weight_unit_name <> '未匹配' THEN CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name  ELSE '未匹配' END AS stat_weight
@@ -122,6 +123,7 @@ WITH dim_date_monthly AS
 	             WHEN business_area_name = '餐饮' AND customer_group_3_name = '直营' THEN customer_group_name
 	             WHEN business_area_name = '电商' THEN customer_group_name  ELSE payer_name END
 	         ,payer_name
+             ,payer_cd
 	         ,product_flavour
 	         ,is_top_dt_customer
 )
@@ -142,6 +144,7 @@ SELECT  t1.fiscal_year
        ,t1.is_new_product_flag
        ,t1.customer_name
        ,t1.payer_name
+       ,t1.payer_cd
        ,t1.product_flavour
        ,t1.is_top_dt_customer
        ,t1.stat_weight
