@@ -1,4 +1,4 @@
-SELECT  t1.xtd_type
+SELECT  t1.date_range_type as xtd_type
        ,t1.fiscal_year
        ,t1.fiscal_month
        ,t1.business_area_name
@@ -26,6 +26,6 @@ SELECT  t1.xtd_type
        ,t1.fiscal_month_conse
        ,t1.fiscal_quarter_conse
        ,t1.time_pasting
-FROM vw_top_customer_sales_flat_qbi t1
+FROM vw_top_dt_sales_monthly_flat_qbi t1
 WHERE t1.fiscal_year >= 2024
 AND t1.product_brand_name IN ('哈根达斯', '湾仔码头')
