@@ -1,5 +1,3 @@
--- SELECT *
-FROM tb_gm_date_master_dim
 WITH dim_date AS
 (
 	SELECT  date_key
@@ -26,10 +24,10 @@ WITH dim_date AS
 	       ,CONCAT(CAST(SUBSTRING(start_date_of_fiscal_quarter,5,2) AS int),'/',CAST(SUBSTRING(start_date_of_fiscal_quarter,7,2) AS int)) AS qtd_begin
 	       ,CONCAT(CAST(SUBSTRING(end_date_of_fiscal_quarter,5,2) AS int),'/',CAST(SUBSTRING(end_date_of_fiscal_quarter,7,2) AS int))     AS qtd_end
 	       ,CONCAT(CAST(SUBSTRING(start_date_of_fiscal_year,5,2) AS int),'/',CAST(SUBSTRING(start_date_of_fiscal_year,7,2) AS int))       AS ytd_begin
-	       ,CONCAT(CAST(SUBSTRING(end_date_of_fiscal_year,5,2) AS int),'/',CAST(SUBSTRING(end_date_of_fiscal_quarter,7,2) AS int))        AS ytd_end
+	       ,CONCAT(CAST(SUBSTRING(end_date_of_fiscal_month,5,2) AS int),'/',CAST(SUBSTRING(end_date_of_fiscal_month,7,2) AS int))         AS ytd_end
 	       ,round(fiscal_days_of_month / 7,0)                                                                                             AS mtd_week_count
 	       ,round(fiscal_days_of_quarter / 7,0)                                                                                           AS qtd_week_count
-	       ,round((DATEDIFF(TO_DATE(end_date_of_fiscal_year,'yyyymmdd'),TO_DATE(start_date_of_fiscal_year,'yyyymmdd'),'day') + 1) / 7,0)  AS ytd_week_count
+	       ,round((DATEDIFF(TO_DATE(end_date_of_fiscal_month,'yyyymmdd'),TO_DATE(start_date_of_fiscal_year,'yyyymmdd'),'day') + 1) / 7,0) AS ytd_week_count
 	FROM tb_gm_date_master_dim
 )
 SELECT  *
