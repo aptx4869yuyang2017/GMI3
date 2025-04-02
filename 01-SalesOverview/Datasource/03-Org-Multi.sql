@@ -30,5 +30,6 @@ SELECT  t1.date_range_type as union_type
 FROM vw_sales_overview_channel_anal_monthly_flat_qbi AS t1
 WHERE t1.fiscal_year >= 2024
 AND t1.product_brand_name IN ('哈根达斯', '湾仔码头')
-AND t1.level_2 NOT IN ('达上', '未匹配')
+AND t1.level_2 NOT IN ('达上')
 and level_2 <> '公司调整项'
+and not (level_1 <> '未匹配' and level_2 = '未匹配')
