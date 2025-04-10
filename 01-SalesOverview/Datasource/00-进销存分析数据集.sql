@@ -69,7 +69,6 @@ WITH dim_date_monthly AS
 	       ,product_flavour
 	       ,is_top_dt_customer
 	       ,CASE WHEN stat_weight_unit_name <> '未匹配' THEN CAST(CAST(stat_weight AS BIGINT) AS STRING) || stat_weight_unit_name  ELSE '未匹配' END AS stat_weight
-	       ,product_code
 	       ,days_of_next_fiscal_month
 	       ,SUM(sellin_case)                                                                                                                   AS cases
 	       ,SUM(sellin_gsv)                                                                                                                    AS gsv_comp
@@ -79,16 +78,6 @@ WITH dim_date_monthly AS
 	       ,SUM(sellin_le_gsv) * 1e3                                                                                                           AS le_gsv_org
 	       ,SUM(sellin_bonus_target_case)                                                                                                      AS st_case_org
 	       ,SUM(sellin_bonus_target_gsv) * 1e3                                                                                                 AS st_gsv_org
-	       ,SUM(stock_case_ly)                                                                                                                 AS stock_case_ly
-	       ,SUM(stock_gsv_ly)                                                                                                                  AS stock_gsv_ly
-	       ,SUM(sellout_past_28days_case) / 28                                                                                                 AS sellout_past_case
-	       ,SUM(sellout_past_28days_gsv) / 28                                                                                                  AS sellout_past_gsv
-	       ,SUM(0) / 28                                                                                                                        AS sellout_next_case
-	       ,SUM(0) / 28                                                                                                                        AS sellout_next_gsv
-	       ,SUM(sellout_past_28days_case_ly) / 28                                                                                              AS sellout_past_case_ly
-	       ,SUM(sellout_past_28days_gsv_ly) / 28                                                                                               AS sellout_past_gsv_ly
-	       ,SUM(0) / 28                                                                                                                        AS sellout_next_case_ly
-	       ,SUM(0) / 28                                                                                                                        AS sellout_next_gsv_ly
 	       ,SUM(sellout_case)                                                                                                                  AS sellout_case
 	       ,SUM(sellout_gsv)                                                                                                                   AS sellout_gsv
 	       ,SUM(sellout_case_ly)                                                                                                               AS sellout_case_ly
@@ -102,32 +91,22 @@ WITH dim_date_monthly AS
 	       ,MAX(created_dt)                                                                                                                    AS created_dt
 	       ,SUM(stock_case)                                                                                                                    AS stock_case
 	       ,SUM(stock_gsv)                                                                                                                     AS stock_gsv
+	       ,SUM(stock_case_ly)                                                                                                                 AS stock_case_ly
+	       ,SUM(stock_gsv_ly)                                                                                                                  AS stock_gsv_ly
 	       ,SUM(stock_case_incl_promotion)                                                                                                     AS stock_case_incl_promotion
 	       ,SUM(stock_gsv_incl_promotion)                                                                                                      AS stock_gsv_incl_promotion
 	       ,SUM(stock_case_latest)                                                                                                             AS stock_case_latest
 	       ,SUM(stock_gsv_latest)                                                                                                              AS stock_gsv_latest
 	       ,SUM(stock_case_incl_promotion_latest)                                                                                              AS stock_case_incl_promotion_latest
 	       ,SUM(stock_gsv_incl_promotion_latest)                                                                                               AS stock_gsv_incl_promotion_latest
-	       ,SUM(stock_case_last)                                                                                                               AS stock_case_last
-	       ,SUM(stock_gsv_last)                                                                                                                AS stock_gsv_last
-	       ,SUM(stock_case_incl_promotion_last)                                                                                                AS stock_case_incl_promotion_last
-	       ,SUM(stock_gsv_incl_promotion_last)                                                                                                 AS stock_gsv_incl_promotion_last
 	       ,SUM(sellout_case_latest_nm)                                                                                                        AS sellout_case_latest_nm
 	       ,SUM(sellout_gsv_latest_nm)                                                                                                         AS sellout_gsv_latest_nm
 	       ,SUM(sellout_case_incl_promotion_latest_nm)                                                                                         AS sellout_case_incl_promotion_latest_nm
 	       ,SUM(sellout_gsv_incl_promotion_latest_nm)                                                                                          AS sellout_gsv_incl_promotion_latest_nm
-	       ,SUM(sellout_case_last_nm)                                                                                                          AS sellout_case_last_nm
-	       ,SUM(sellout_gsv_last_nm)                                                                                                           AS sellout_gsv_last_nm
-	       ,SUM(sellout_case_incl_promotion_last_nm)                                                                                           AS sellout_case_incl_promotion_last_nm
-	       ,SUM(sellout_gsv_incl_promotion_last_nm)                                                                                            AS sellout_gsv_incl_promotion_last_nm
 	       ,SUM(sellout_case_latest_nm_ly)                                                                                                     AS sellout_case_latest_nm_ly
 	       ,SUM(sellout_gsv_latest_nm_ly)                                                                                                      AS sellout_gsv_latest_nm_ly
 	       ,SUM(sellout_case_incl_promotion_latest_nm_ly)                                                                                      AS sellout_case_incl_promotion_latest_nm_ly
 	       ,SUM(sellout_gsv_incl_promotion_latest_nm_ly)                                                                                       AS sellout_gsv_incl_promotion_latest_nm_ly
-	       ,SUM(sellout_case_last_nm_ly)                                                                                                       AS sellout_case_last_nm_ly
-	       ,SUM(sellout_gsv_last_nm_ly)                                                                                                        AS sellout_gsv_last_nm_ly
-	       ,SUM(sellout_case_incl_promotion_last_nm_ly)                                                                                        AS sellout_case_incl_promotion_last_nm_ly
-	       ,SUM(sellout_gsv_incl_promotion_last_nm_ly)                                                                                         AS sellout_gsv_incl_promotion_last_nm_ly
 	       ,SUM(stock_case_incl_promotion_ly)                                                                                                  AS stock_case_incl_promotion_ly
 	       ,SUM(stock_gsv_incl_promotion_ly)                                                                                                   AS stock_gsv_incl_promotion_ly
 	       ,SUM(stock_case_latest_ly)                                                                                                          AS stock_case_latest_ly
@@ -158,7 +137,6 @@ WITH dim_date_monthly AS
 	         ,payer_cd
 	         ,product_flavour
 	         ,is_top_dt_customer
-	         ,product_code
 	         ,days_of_next_fiscal_month
 )
 SELECT  t1.fiscal_year
@@ -182,7 +160,6 @@ SELECT  t1.fiscal_year
        ,t1.product_flavour
        ,t1.is_top_dt_customer
        ,t1.stat_weight
-       ,t1.product_code
        ,t1.cases
        ,t1.gsv_comp
        ,t1.cases_ly
@@ -193,14 +170,6 @@ SELECT  t1.fiscal_year
        ,t1.st_gsv_org
        ,t1.stock_case_ly
        ,t1.stock_gsv_ly
-       ,t1.sellout_past_case
-       ,t1.sellout_past_gsv
-       ,t1.sellout_next_case
-       ,t1.sellout_next_gsv
-       ,t1.sellout_past_case_ly
-       ,t1.sellout_past_gsv_ly
-       ,t1.sellout_next_case_ly
-       ,t1.sellout_next_gsv_ly
        ,t1.sellout_case
        ,t1.sellout_gsv
        ,t1.sellout_case_ly
@@ -215,10 +184,6 @@ SELECT  t1.fiscal_year
        ,t1.sellout_gsv_latest_nm_ly
        ,t1.sellout_case_incl_promotion_latest_nm_ly
        ,t1.sellout_gsv_incl_promotion_latest_nm_ly
-       ,t1.sellout_case_last_nm_ly
-       ,t1.sellout_gsv_last_nm_ly
-       ,t1.sellout_case_incl_promotion_last_nm_ly
-       ,t1.sellout_gsv_incl_promotion_last_nm_ly
        ,t1.stock_case
        ,t1.stock_gsv
        ,t1.stock_case_incl_promotion
@@ -227,18 +192,10 @@ SELECT  t1.fiscal_year
        ,t1.stock_gsv_latest
        ,t1.stock_case_incl_promotion_latest
        ,t1.stock_gsv_incl_promotion_latest
-       ,t1.stock_case_last
-       ,t1.stock_gsv_last
-       ,t1.stock_case_incl_promotion_last
-       ,t1.stock_gsv_incl_promotion_last
        ,t1.sellout_case_latest_nm
        ,t1.sellout_gsv_latest_nm
        ,t1.sellout_case_incl_promotion_latest_nm
        ,t1.sellout_gsv_incl_promotion_latest_nm
-       ,t1.sellout_case_last_nm
-       ,t1.sellout_gsv_last_nm
-       ,t1.sellout_case_incl_promotion_last_nm
-       ,t1.sellout_gsv_incl_promotion_last_nm
        ,t1.stock_case_incl_promotion_ly
        ,t1.stock_gsv_incl_promotion_ly
        ,t1.stock_case_latest_ly
@@ -275,6 +232,7 @@ WHERE t2.fiscal_year >= 2024
 AND product_brand_name IN ( '哈根达斯' , '湾仔码头' )
 -- AND nvl(sales_district_name, '') NOT IN ( '达上', '未匹配', '未分配' )
 -- AND nvl(customer_group_3_name, '') NOT IN ( '未分配' )
+AND not (product_category_name = '冰淇淋' AND business_area_name = '餐饮')
 AND not(t2.fiscal_month_conse <= (
 SELECT  MAX(year_max_fiscal_month_conse)
-FROM cte_year_max) AND nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(sellout_past_case, 0) = 0 AND nvl(sellout_past_gsv, 0) = 0 AND nvl(sellout_next_case, 0) = 0 AND nvl(sellout_next_gsv, 0) = 0 AND nvl(sellout_past_case_ly, 0) = 0 AND nvl(sellout_past_gsv_ly, 0) = 0 AND nvl(sellout_next_case_ly, 0) = 0 AND nvl(sellout_next_gsv_ly, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 AND nvl(sellout_case_incl_promotion, 0) = 0 AND nvl(sellout_gsv_incl_promotion, 0) = 0 AND nvl(sellout_case_incl_promotion_ly, 0) = 0 AND nvl(sellout_gsv_incl_promotion_ly, 0) = 0)
+FROM cte_year_max) AND ( nvl(cases, 0) = 0 AND nvl(gsv_comp, 0) = 0 AND nvl(cases_ly, 0) = 0 AND nvl(gsv_comp_ly, 0) = 0 AND nvl(le_case_org, 0) = 0 AND nvl(le_gsv_org, 0) = 0 AND nvl(st_case_org, 0) = 0 AND nvl(st_gsv_org, 0) = 0 AND nvl(sellout_case, 0) = 0 AND nvl(sellout_gsv, 0) = 0 AND nvl(sellout_case_ly, 0) = 0 AND nvl(sellout_gsv_ly, 0) = 0 AND nvl(sellout_le_case, 0) = 0 AND nvl(sellout_le_gsv, 0) = 0 AND nvl(sellout_case_incl_promotion, 0) = 0 AND nvl(sellout_gsv_incl_promotion, 0) = 0 AND nvl(sellout_case_incl_promotion_ly, 0) = 0 AND nvl(sellout_gsv_incl_promotion_ly, 0) = 0 AND nvl(created_dt, 0) = 0 AND nvl(stock_case, 0) = 0 AND nvl(stock_gsv, 0) = 0 AND nvl(stock_case_ly, 0) = 0 AND nvl(stock_gsv_ly, 0) = 0 AND nvl(stock_case_incl_promotion, 0) = 0 AND nvl(stock_gsv_incl_promotion, 0) = 0 AND nvl(stock_case_latest, 0) = 0 AND nvl(stock_gsv_latest, 0) = 0 AND nvl(stock_case_incl_promotion_latest, 0) = 0 AND nvl(stock_gsv_incl_promotion_latest, 0) = 0 AND nvl(sellout_case_latest_nm, 0) = 0 AND nvl(sellout_gsv_latest_nm, 0) = 0 AND nvl(sellout_case_incl_promotion_latest_nm, 0) = 0 AND nvl(sellout_gsv_incl_promotion_latest_nm, 0) = 0 AND nvl(sellout_case_latest_nm_ly, 0) = 0 AND nvl(sellout_gsv_latest_nm_ly, 0) = 0 AND nvl(sellout_case_incl_promotion_latest_nm_ly, 0) = 0 AND nvl(sellout_gsv_incl_promotion_latest_nm_ly, 0) = 0 AND nvl(stock_case_incl_promotion_ly, 0) = 0 AND nvl(stock_gsv_incl_promotion_ly, 0) = 0 AND nvl(stock_case_latest_ly, 0) = 0 AND nvl(stock_gsv_latest_ly, 0) = 0))
