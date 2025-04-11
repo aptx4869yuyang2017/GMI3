@@ -41,32 +41,52 @@ WITH cte_dim_date_monthly AS
 	       ,is_top_dt_customer
 	       ,stat_weight
 	       ,stat_weight_unit_name
-	       ,SUM(sellin_case)                    AS sellin_case
-	       ,SUM(sellin_gsv)                     AS sellin_gsv
-	       ,SUM(sellin_case_ly)                 AS sellin_case_ly
-	       ,SUM(sellin_gsv_ly)                  AS sellin_gsv_ly
-	       ,SUM(sellin_le_case)                 AS sellin_le_case
-	       ,SUM(sellin_le_gsv)                  AS sellin_le_gsv
-	       ,SUM(sellin_bonus_target_case)       AS sellin_bonus_target_case
-	       ,SUM(sellin_bonus_target_gsv)        AS sellin_bonus_target_gsv
-	       ,SUM(stock_case)                     AS stock_case
-	       ,SUM(stock_gsv)                      AS stock_gsv
-	       ,SUM(stock_case_ly)                  AS stock_case_ly
-	       ,SUM(stock_gsv_ly)                   AS stock_gsv_ly
-	       ,SUM(sellout_case)                   AS sellout_case
-	       ,SUM(sellout_gsv)                    AS sellout_gsv
-	       ,SUM(sellout_case_ly)                AS sellout_case_ly
-	       ,SUM(sellout_gsv_ly)                 AS sellout_gsv_ly
-	       ,SUM(sellout_le_case)                AS sellout_le_case
-	       ,SUM(sellout_le_gsv)                 AS sellout_le_gsv
-	       ,SUM(sellout_case_incl_promotion)    AS sellout_case_incl_promotion
-	       ,SUM(sellout_gsv_incl_promotion)     AS sellout_gsv_incl_promotion
-	       ,SUM(sellout_case_incl_promotion_ly) AS sellout_case_incl_promotion_ly
-	       ,SUM(sellout_gsv_incl_promotion_ly)  AS sellout_gsv_incl_promotion_ly
-	       ,MAX(created_dt)                     AS created_dt
+	       ,product_code
+		   ,product_name_abbr
+	       ,SUM(sellin_case)                              AS sellin_case
+	       ,SUM(sellin_gsv)                               AS sellin_gsv
+	       ,SUM(sellin_case_ly)                           AS sellin_case_ly
+	       ,SUM(sellin_gsv_ly)                            AS sellin_gsv_ly
+	       ,SUM(sellin_le_case)                           AS sellin_le_case
+	       ,SUM(sellin_le_gsv)                            AS sellin_le_gsv
+	       ,SUM(sellin_bonus_target_case)                 AS sellin_bonus_target_case
+	       ,SUM(sellin_bonus_target_gsv)                  AS sellin_bonus_target_gsv
+	       ,SUM(sellout_case)                             AS sellout_case
+	       ,SUM(sellout_gsv)                              AS sellout_gsv
+	       ,SUM(sellout_case_ly)                          AS sellout_case_ly
+	       ,SUM(sellout_gsv_ly)                           AS sellout_gsv_ly
+	       ,SUM(sellout_le_case)                          AS sellout_le_case
+	       ,SUM(sellout_le_gsv)                           AS sellout_le_gsv
+	       ,SUM(sellout_case_incl_promotion)              AS sellout_case_incl_promotion
+	       ,SUM(sellout_gsv_incl_promotion)               AS sellout_gsv_incl_promotion
+	       ,SUM(sellout_case_incl_promotion_ly)           AS sellout_case_incl_promotion_ly
+	       ,SUM(sellout_gsv_incl_promotion_ly)            AS sellout_gsv_incl_promotion_ly
+	       ,SUM(stock_case)                               AS stock_case
+	       ,SUM(stock_gsv)                                AS stock_gsv
+	       ,SUM(stock_case_ly)                            AS stock_case_ly
+	       ,SUM(stock_gsv_ly)                             AS stock_gsv_ly
+	       ,SUM(stock_case_incl_promotion)                AS stock_case_incl_promotion
+	       ,SUM(stock_gsv_incl_promotion)                 AS stock_gsv_incl_promotion
+	       ,SUM(stock_case_latest)                        AS stock_case_latest
+	       ,SUM(stock_gsv_latest)                         AS stock_gsv_latest
+	       ,SUM(stock_case_incl_promotion_latest)         AS stock_case_incl_promotion_latest
+	       ,SUM(stock_gsv_incl_promotion_latest)          AS stock_gsv_incl_promotion_latest
+	       ,SUM(sellout_case_latest_nm)                   AS sellout_case_latest_nm
+	       ,SUM(sellout_gsv_latest_nm)                    AS sellout_gsv_latest_nm
+	       ,SUM(sellout_case_incl_promotion_latest_nm)    AS sellout_case_incl_promotion_latest_nm
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm)     AS sellout_gsv_incl_promotion_latest_nm
+	       ,SUM(sellout_case_latest_nm_ly)                AS sellout_case_latest_nm_ly
+	       ,SUM(sellout_gsv_latest_nm_ly)                 AS sellout_gsv_latest_nm_ly
+	       ,SUM(sellout_case_incl_promotion_latest_nm_ly) AS sellout_case_incl_promotion_latest_nm_ly
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm_ly)  AS sellout_gsv_incl_promotion_latest_nm_ly
+	       ,SUM(stock_case_incl_promotion_ly)             AS stock_case_incl_promotion_ly
+	       ,SUM(stock_gsv_incl_promotion_ly)              AS stock_gsv_incl_promotion_ly
+	       ,SUM(stock_case_latest_ly)                     AS stock_case_latest_ly
+	       ,SUM(stock_gsv_latest_ly)                      AS stock_gsv_latest_ly
+	       ,MAX(created_dt)                               AS created_dt
 	FROM tb_sales_overview_monthly_flat_qbi
 	WHERE mt >= '202401' -- AND business_area_name = '零售'
-	-- AND customer_group_3_name IN ('经销商')
+ -- AND customer_group_3_name IN ('经销商')
 	GROUP BY  fiscal_year
 	         ,fiscal_quarter
 	         ,fiscal_month
@@ -89,9 +109,11 @@ WITH cte_dim_date_monthly AS
 	         ,is_top_dt_customer
 	         ,stat_weight
 	         ,stat_weight_unit_name
+	         ,product_code
+			 ,product_name_abbr
 ), cte_fact_ytd AS
 (
-	SELECT  'YTD'                               AS date_range_type
+	SELECT  'YTD'                                         AS date_range_type
 	       ,t2.fiscal_year
 	       ,t2.fiscal_quarter
 	       ,t2.fiscal_month
@@ -114,33 +136,53 @@ WITH cte_dim_date_monthly AS
 	       ,t1.is_top_dt_customer
 	       ,t1.stat_weight
 	       ,t1.stat_weight_unit_name
-	       ,SUM(sellin_case)                    AS sellin_case
-	       ,SUM(sellin_gsv)                     AS sellin_gsv
-	       ,SUM(sellin_case_ly)                 AS sellin_case_ly
-	       ,SUM(sellin_gsv_ly)                  AS sellin_gsv_ly
-	       ,SUM(sellin_le_case)                 AS sellin_le_case
-	       ,SUM(sellin_le_gsv)                  AS sellin_le_gsv
-	       ,SUM(sellin_bonus_target_case)       AS sellin_bonus_target_case
-	       ,SUM(sellin_bonus_target_gsv)        AS sellin_bonus_target_gsv
-	       ,SUM(stock_case)                     AS stock_case
-	       ,SUM(stock_gsv)                      AS stock_gsv
-	       ,SUM(stock_case_ly)                  AS stock_case_ly
-	       ,SUM(stock_gsv_ly)                   AS stock_gsv_ly
-	       ,SUM(sellout_case)                   AS sellout_case
-	       ,SUM(sellout_gsv)                    AS sellout_gsv
-	       ,SUM(sellout_case_ly)                AS sellout_case_ly
-	       ,SUM(sellout_gsv_ly)                 AS sellout_gsv_ly
-	       ,SUM(sellout_le_case)                AS sellout_le_case
-	       ,SUM(sellout_le_gsv)                 AS sellout_le_gsv
-	       ,SUM(sellout_case_incl_promotion)    AS sellout_case_incl_promotion
-	       ,SUM(sellout_gsv_incl_promotion)     AS sellout_gsv_incl_promotion
-	       ,SUM(sellout_case_incl_promotion_ly) AS sellout_case_incl_promotion_ly
-	       ,SUM(sellout_gsv_incl_promotion_ly)  AS sellout_gsv_incl_promotion_ly
-	       ,MAX(created_dt)                     AS created_dt
+	       ,t1.product_code
+		   ,t1.product_name_abbr
+	       ,SUM(sellin_case)                              AS sellin_case
+	       ,SUM(sellin_gsv)                               AS sellin_gsv
+	       ,SUM(sellin_case_ly)                           AS sellin_case_ly
+	       ,SUM(sellin_gsv_ly)                            AS sellin_gsv_ly
+	       ,SUM(sellin_le_case)                           AS sellin_le_case
+	       ,SUM(sellin_le_gsv)                            AS sellin_le_gsv
+	       ,SUM(sellin_bonus_target_case)                 AS sellin_bonus_target_case
+	       ,SUM(sellin_bonus_target_gsv)                  AS sellin_bonus_target_gsv
+	       ,SUM(sellout_case)                             AS sellout_case
+	       ,SUM(sellout_gsv)                              AS sellout_gsv
+	       ,SUM(sellout_case_ly)                          AS sellout_case_ly
+	       ,SUM(sellout_gsv_ly)                           AS sellout_gsv_ly
+	       ,SUM(sellout_le_case)                          AS sellout_le_case
+	       ,SUM(sellout_le_gsv)                           AS sellout_le_gsv
+	       ,SUM(sellout_case_incl_promotion)              AS sellout_case_incl_promotion
+	       ,SUM(sellout_gsv_incl_promotion)               AS sellout_gsv_incl_promotion
+	       ,SUM(sellout_case_incl_promotion_ly)           AS sellout_case_incl_promotion_ly
+	       ,SUM(sellout_gsv_incl_promotion_ly)            AS sellout_gsv_incl_promotion_ly
+	       ,SUM(stock_case)                               AS stock_case
+	       ,SUM(stock_gsv)                                AS stock_gsv
+	       ,SUM(stock_case_ly)                            AS stock_case_ly
+	       ,SUM(stock_gsv_ly)                             AS stock_gsv_ly
+	       ,SUM(stock_case_incl_promotion)                AS stock_case_incl_promotion
+	       ,SUM(stock_gsv_incl_promotion)                 AS stock_gsv_incl_promotion
+	       ,SUM(stock_case_latest)                        AS stock_case_latest
+	       ,SUM(stock_gsv_latest)                         AS stock_gsv_latest
+	       ,SUM(stock_case_incl_promotion_latest)         AS stock_case_incl_promotion_latest
+	       ,SUM(stock_gsv_incl_promotion_latest)          AS stock_gsv_incl_promotion_latest
+	       ,SUM(sellout_case_latest_nm)                   AS sellout_case_latest_nm
+	       ,SUM(sellout_gsv_latest_nm)                    AS sellout_gsv_latest_nm
+	       ,SUM(sellout_case_incl_promotion_latest_nm)    AS sellout_case_incl_promotion_latest_nm
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm)     AS sellout_gsv_incl_promotion_latest_nm
+	       ,SUM(sellout_case_latest_nm_ly)                AS sellout_case_latest_nm_ly
+	       ,SUM(sellout_gsv_latest_nm_ly)                 AS sellout_gsv_latest_nm_ly
+	       ,SUM(sellout_case_incl_promotion_latest_nm_ly) AS sellout_case_incl_promotion_latest_nm_ly
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm_ly)  AS sellout_gsv_incl_promotion_latest_nm_ly
+	       ,SUM(stock_case_incl_promotion_ly)             AS stock_case_incl_promotion_ly
+	       ,SUM(stock_gsv_incl_promotion_ly)              AS stock_gsv_incl_promotion_ly
+	       ,SUM(stock_case_latest_ly)                     AS stock_case_latest_ly
+	       ,SUM(stock_gsv_latest_ly)                      AS stock_gsv_latest_ly
+	       ,MAX(created_dt)                               AS created_dt
 	FROM cte_fact t1
 	LEFT JOIN cte_dim_date_monthly t2
 	ON cast(t1.fiscal_year AS int) = cast(t2.fiscal_year AS int)
-	WHERE t1.fiscal_month <= t2.fiscal_month
+	WHERE cast(t1.fiscal_month as int) <= cast(t2.fiscal_month as int)
 	GROUP BY  t2.fiscal_year
 	         ,t2.fiscal_quarter
 	         ,t2.fiscal_month
@@ -163,9 +205,11 @@ WITH cte_dim_date_monthly AS
 	         ,t1.is_top_dt_customer
 	         ,t1.stat_weight
 	         ,t1.stat_weight_unit_name
+	         ,t1.product_code
+			 ,t1.product_name_abbr
 ) , cte_fact_qtd AS
 (
-	SELECT  'QTD'                               AS date_range_type
+	SELECT  'QTD'                                         AS date_range_type
 	       ,t2.fiscal_year
 	       ,t2.fiscal_quarter
 	       ,t2.fiscal_month
@@ -188,29 +232,49 @@ WITH cte_dim_date_monthly AS
 	       ,t1.is_top_dt_customer
 	       ,t1.stat_weight
 	       ,t1.stat_weight_unit_name
-	       ,SUM(sellin_case)                    AS sellin_case
-	       ,SUM(sellin_gsv)                     AS sellin_gsv
-	       ,SUM(sellin_case_ly)                 AS sellin_case_ly
-	       ,SUM(sellin_gsv_ly)                  AS sellin_gsv_ly
-	       ,SUM(sellin_le_case)                 AS sellin_le_case
-	       ,SUM(sellin_le_gsv)                  AS sellin_le_gsv
-	       ,SUM(sellin_bonus_target_case)       AS sellin_bonus_target_case
-	       ,SUM(sellin_bonus_target_gsv)        AS sellin_bonus_target_gsv
-	       ,SUM(stock_case)                     AS stock_case
-	       ,SUM(stock_gsv)                      AS stock_gsv
-	       ,SUM(stock_case_ly)                  AS stock_case_ly
-	       ,SUM(stock_gsv_ly)                   AS stock_gsv_ly
-	       ,SUM(sellout_case)                   AS sellout_case
-	       ,SUM(sellout_gsv)                    AS sellout_gsv
-	       ,SUM(sellout_case_ly)                AS sellout_case_ly
-	       ,SUM(sellout_gsv_ly)                 AS sellout_gsv_ly
-	       ,SUM(sellout_le_case)                AS sellout_le_case
-	       ,SUM(sellout_le_gsv)                 AS sellout_le_gsv
-	       ,SUM(sellout_case_incl_promotion)    AS sellout_case_incl_promotion
-	       ,SUM(sellout_gsv_incl_promotion)     AS sellout_gsv_incl_promotion
-	       ,SUM(sellout_case_incl_promotion_ly) AS sellout_case_incl_promotion_ly
-	       ,SUM(sellout_gsv_incl_promotion_ly)  AS sellout_gsv_incl_promotion_ly
-	       ,MAX(created_dt)                     AS created_dt
+	       ,t1.product_code
+		   ,t1.product_name_abbr
+	       ,SUM(sellin_case)                              AS sellin_case
+	       ,SUM(sellin_gsv)                               AS sellin_gsv
+	       ,SUM(sellin_case_ly)                           AS sellin_case_ly
+	       ,SUM(sellin_gsv_ly)                            AS sellin_gsv_ly
+	       ,SUM(sellin_le_case)                           AS sellin_le_case
+	       ,SUM(sellin_le_gsv)                            AS sellin_le_gsv
+	       ,SUM(sellin_bonus_target_case)                 AS sellin_bonus_target_case
+	       ,SUM(sellin_bonus_target_gsv)                  AS sellin_bonus_target_gsv
+	       ,SUM(sellout_case)                             AS sellout_case
+	       ,SUM(sellout_gsv)                              AS sellout_gsv
+	       ,SUM(sellout_case_ly)                          AS sellout_case_ly
+	       ,SUM(sellout_gsv_ly)                           AS sellout_gsv_ly
+	       ,SUM(sellout_le_case)                          AS sellout_le_case
+	       ,SUM(sellout_le_gsv)                           AS sellout_le_gsv
+	       ,SUM(sellout_case_incl_promotion)              AS sellout_case_incl_promotion
+	       ,SUM(sellout_gsv_incl_promotion)               AS sellout_gsv_incl_promotion
+	       ,SUM(sellout_case_incl_promotion_ly)           AS sellout_case_incl_promotion_ly
+	       ,SUM(sellout_gsv_incl_promotion_ly)            AS sellout_gsv_incl_promotion_ly
+	       ,SUM(stock_case)                               AS stock_case
+	       ,SUM(stock_gsv)                                AS stock_gsv
+	       ,SUM(stock_case_ly)                            AS stock_case_ly
+	       ,SUM(stock_gsv_ly)                             AS stock_gsv_ly
+	       ,SUM(stock_case_incl_promotion)                AS stock_case_incl_promotion
+	       ,SUM(stock_gsv_incl_promotion)                 AS stock_gsv_incl_promotion
+	       ,SUM(stock_case_latest)                        AS stock_case_latest
+	       ,SUM(stock_gsv_latest)                         AS stock_gsv_latest
+	       ,SUM(stock_case_incl_promotion_latest)         AS stock_case_incl_promotion_latest
+	       ,SUM(stock_gsv_incl_promotion_latest)          AS stock_gsv_incl_promotion_latest
+	       ,SUM(sellout_case_latest_nm)                   AS sellout_case_latest_nm
+	       ,SUM(sellout_gsv_latest_nm)                    AS sellout_gsv_latest_nm
+	       ,SUM(sellout_case_incl_promotion_latest_nm)    AS sellout_case_incl_promotion_latest_nm
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm)     AS sellout_gsv_incl_promotion_latest_nm
+	       ,SUM(sellout_case_latest_nm_ly)                AS sellout_case_latest_nm_ly
+	       ,SUM(sellout_gsv_latest_nm_ly)                 AS sellout_gsv_latest_nm_ly
+	       ,SUM(sellout_case_incl_promotion_latest_nm_ly) AS sellout_case_incl_promotion_latest_nm_ly
+	       ,SUM(sellout_gsv_incl_promotion_latest_nm_ly)  AS sellout_gsv_incl_promotion_latest_nm_ly
+	       ,SUM(stock_case_incl_promotion_ly)             AS stock_case_incl_promotion_ly
+	       ,SUM(stock_gsv_incl_promotion_ly)              AS stock_gsv_incl_promotion_ly
+	       ,SUM(stock_case_latest_ly)                     AS stock_case_latest_ly
+	       ,SUM(stock_gsv_latest_ly)                      AS stock_gsv_latest_ly
+	       ,MAX(created_dt)                               AS created_dt
 	FROM cte_fact t1
 	LEFT JOIN cte_dim_date_monthly t2
 	ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_quarter = t2.fiscal_quarter
@@ -237,6 +301,8 @@ WITH cte_dim_date_monthly AS
 	         ,t1.is_top_dt_customer
 	         ,t1.stat_weight
 	         ,t1.stat_weight_unit_name
+	         ,t1.product_code
+			 ,t1.product_name_abbr
 ) , cte_union_t AS
 (
 	SELECT  'MTD' AS date_range_type
@@ -249,5 +315,13 @@ WITH cte_dim_date_monthly AS
 	SELECT  *
 	FROM cte_fact_ytd
 )
-SELECT  *
-FROM cte_union_t
+SELECT  t1.*
+       ,t2.fiscal_year_month
+       ,t2.fiscal_month_conse
+       ,t2.fiscal_quarter_conse
+       ,t2.fiscal_year_show
+       ,t2.fiscal_month_show
+FROM cte_union_t AS t1
+LEFT JOIN cte_dim_date_monthly t2
+ON t1.fiscal_year = t2.fiscal_year AND t1.fiscal_month = t2.fiscal_month
+WHERE t1.fiscal_year >= 2024
