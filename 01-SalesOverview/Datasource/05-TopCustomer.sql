@@ -1,4 +1,4 @@
-SELECT  t1.date_range_type as xtd_type
+SELECT  t1.date_range_type                                                                                          AS xtd_type
        ,t1.fiscal_year
        ,t1.fiscal_month
        ,t1.business_area_name
@@ -10,16 +10,14 @@ SELECT  t1.date_range_type as xtd_type
        ,t1.gsv
        ,t1.case_ly
        ,t1.gsv_ly
-       ,t1.stock_case
-       ,t1.stock_gsv
-       ,t1.sellout_past_28days_case
-       ,t1.sellout_past_28days_gsv
-       ,t1.sellout_next_28days_case
-       ,t1.sellout_next_28days_gsv
+       ,CASE WHEN business_area_name = '零售' THEN stock_case_latest
+             WHEN business_area_name = '餐饮' THEN stock_gsv_incl_promotion_latest END                                AS stock_doh
+       ,CASE WHEN business_area_name = '零售' THEN sellout_case_latest_nm/days_of_next_fiscal_month
+             WHEN business_area_name = '餐饮' THEN sellout_gsv_incl_promotion_latest_nm/days_of_next_fiscal_month END AS sellout_doh
        ,t1.le_case
-       ,t1.le_gsv
+       ,t1.le_gsv * 1e3                                                                                             AS le_gsv
        ,t1.st_case
-       ,t1.st_gsv
+       ,t1.st_gsv * 1e3                                                                                             AS st_gsv
        ,t1.fiscal_quarter
        ,t1.fiscal_yp
        ,t1.fiscal_year_month
